@@ -12,6 +12,7 @@ import com.theincgi.autocrafter.packets.PacketClientChanged;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import java.io.IOException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
@@ -108,25 +109,27 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = this.tileAutoCrafter.getDisplayName().getUnformattedText();;
-        fontRendererObj.drawString(s, 88 - this.field_146289_q.func_78256_a(s) / 2, 6, 4210752);
-        this.fontRendererObj.drawString(this.playerInv.func_145748_c_().func_150260_c(), 8, 72, 4210752);
+        String s = this.tileAutoCrafter.getDisplayName().getUnformattedText();
+        
+        fontRendererObj.drawString(s, 88-fontRendererObj.getStringWidth(s)/2, 6, 0x404040);
+        this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 0x404040);
     }
 
-    protected void func_73864_a(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.func_73864_a(mouseX, mouseY, mouseButton);
+
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
         int x = this.width / 2 - 88;
-        int y = this.heigh / 2 - 83;
-        int playerDim = Minecraft.getInstance().field_71439_g.field_71093_bK;
+        int y = this.height / 2 - 83;
+        int playerDim = Minecraft.getInstance().player.dimension.getId();
         PacketClientChanged packet;
         if (this.prev.isInBounds(mouseX - x, mouseY - y)) {
-            packet = PacketClientChanged.nextRecipe(this.tileAutoCrafter.func_174877_v());
+            packet = PacketClientChanged.nextRecipe(this.tileAutoCrafter.getPos());
             Core.network.sendToServer(packet);
         } else if (this.next.isInBounds(mouseX - x, mouseY - y)) {
-            packet = PacketClientChanged.prevRecipe(this.tileAutoCrafter.func_174877_v());
+            packet = PacketClientChanged.prevRecipe(this.tileAutoCrafter.getPos());
             Core.network.sendToServer(packet);
         } else if (this.container.targetSlot.equals(this.getSlotUnderMouse())) {
-            Core.proxy.sendPacketServer(PacketClientChanged.targetChanged(this.tileAutoCrafter.func_174877_v(), Minecraft.getInstance().field_71439_g.field_71071_by.func_70445_o()));
+            Core.proxy.sendPacketServer(PacketClientChanged.targetChanged(this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack()));
         }
 
     }
