@@ -3,10 +3,13 @@ package com.theincgi.autocrafter.tileEntity;
 import com.theincgi.autocrafter.Recipe;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+
 import net.minecraftforge.items.IItemHandler;
 
-public class ItemStackHandlerAutoCrafter implements IItemHandler {
+import javax.annotation.Nonnull;
+
+public class ItemStackHandlerAutoCrafter implements IItemHandler   {
 
    private TileAutoCrafter tac;
 
@@ -15,46 +18,52 @@ public class ItemStackHandlerAutoCrafter implements IItemHandler {
       this.tac = tac;
    }
 
+   @Override
    public int getSlots() {
       return 11;
    }
 
+   @Nonnull
+   @Override
    public ItemStack getStackInSlot(int slot) {
-      return this.tac.func_70301_a(slot);
+      return tac.getStackInSlot(slot);
    }
 
+   @Nonnull
+   @Override
    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-      if(this.tac.func_180462_a(slot, stack, EnumFacing.UP)) {
+      if(tac.canInsertItem(slot, stack, Direction.UP)) {
          int space = this.getSpaceFor(slot, stack);
          if(simulate) {
-            if(stack.func_190916_E() <= space) {
-               return ItemStack.field_190927_a;
+            if(stack.getCount() <= space) {
+               return ItemStack.EMPTY;
             } else {
-               ItemStack newCount1 = stack.func_77946_l();
-               newCount1.func_190918_g(space);
+               ItemStack newCount1 = stack.copy();
+               newCount1.shrink(space);
                return newCount1;
             }
          } else {
-            int newCount = this.getStackInSlot(slot).func_190916_E() + stack.func_190916_E();
-            newCount = Math.min(newCount, this.getStackInSlot(slot).func_77976_d());
-            if(this.getStackInSlot(slot).func_190926_b()) {
-               this.tac.func_70299_a(slot, stack.func_77946_l().func_77979_a(newCount));
+            int newCount = this.getStackInSlot(slot).getCount() + stack.getCount();
+            newCount = Math.min(newCount, this.getStackInSlot(slot).getMaxStackSize());
+            if(this.getStackInSlot(slot).isEmpty()) {
+               this.tac.setInventorySlotContents(slot, stack.copy().split(newCount));
             } else {
-               this.getStackInSlot(slot).func_190920_e(newCount);
+               this.getStackInSlot(slot).setCount(newCount);
             }
 
-            ItemStack temp = stack.func_77946_l();
-            temp.func_190918_g(space);
+            ItemStack temp = stack.copy();
+            temp.shrink(space);
             return temp;
          }
       } else {
          return stack;
       }
    }
-
+   @Nonnull
+   @Override
    public ItemStack extractItem(int slot, int amount, boolean simulate) {
       ItemStack stackIn = this.getStackInSlot(slot);
-      return this.tac.func_180461_b(slot, stackIn, EnumFacing.DOWN)?(simulate?this.tac.SIMULATEdecrStackSize(slot, amount):this.tac.func_70298_a(slot, amount)):ItemStack.field_190927_a;
+      return this.tac.canExtractItem(slot, stackIn, Direction.DOWN)?(simulate?this.tac.SIMULATEdecrStackSize(slot, amount):this.tac.decrStackSize(slot, amount)):ItemStack.EMPTY;
    }
 
    public int getSpaceFor(int indx, ItemStack s) {
@@ -64,18 +73,24 @@ public class ItemStackHandlerAutoCrafter implements IItemHandler {
 
       if(this.tac.getRecipe().matchesRecipe(indx, s)) {
          if(Recipe.matches(s, this.getStackInSlot(indx))) {
-            return s.func_77976_d() - this.getStackInSlot(indx).func_190916_E();
+            return s.getMaxStackSize() - this.getStackInSlot(indx).getCount();
          }
 
-         if(this.getStackInSlot(indx).func_190926_b()) {
-            return s.func_77976_d();
+         if(this.getStackInSlot(indx).isEmpty()) {
+            return s.getMaxStackSize();
          }
       }
 
       return 0;
    }
 
+   @Override
    public int getSlotLimit(int slot) {
-      return this.getStackInSlot(slot).func_77976_d();
+      return this.getStackInSlot(slot).getMaxStackSize();
+   }
+
+   @Override
+   public boolean isItemValid(int slot, @Nonnull ItemStack stack) {//not sure
+      return tac.isItemValidForSlot(slot,stack);
    }
 }
