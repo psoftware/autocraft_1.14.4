@@ -109,8 +109,8 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = this.tileAutoCrafter.getDisplayName().getUnformattedText();
-        
+        String s = this.tileAutoCrafter.getDisplayName().getUnformattedComponentText();
+
         fontRendererObj.drawString(s, 88-fontRendererObj.getStringWidth(s)/2, 6, 0x404040);
         this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 0x404040);
     }
