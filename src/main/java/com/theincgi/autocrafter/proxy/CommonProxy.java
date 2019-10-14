@@ -31,13 +31,6 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy {
-
-
-   public static final BlockAutoCrafter TESTBLOCK_TYPE = new BlockAutoCrafter();
-   public static final TileEntityType<?> TESTTILEENTITY_TYPE =
-           TileEntityType.Builder.create(TileAutoCrafter::new, TESTBLOCK_TYPE).build(null)
-                   .setRegistryName(Core.MODID, "testblocktileentity");//todo
-
   /* public void preInit(FMLPreInitializationEvent e) {
       BlockHandler.init();
       BlockHandler.reg();
@@ -70,22 +63,6 @@ public class CommonProxy {
 
    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
    public static class ForgeEventHandler {
-      @SubscribeEvent
-      public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
-         event.getRegistry().register(TESTTILEENTITY_TYPE);
-      }
-
-      @SubscribeEvent
-      public static void registerBlock(RegistryEvent.Register<Block> event) {
-         event.getRegistry().register(TESTBLOCK_TYPE);
-      }
-
-      @SubscribeEvent
-      public static void registerItems(RegistryEvent.Register<Item> event) {
-         event.getRegistry().registerAll(new BlockItem(TESTBLOCK_TYPE, (new Item.Properties()).group(ItemGroup.DECORATIONS))
-                 .setRegistryName("testblockitem"));
-      }
-
       @SubscribeEvent
       public static void serverStarting(FMLServerStartingEvent evt)
       {

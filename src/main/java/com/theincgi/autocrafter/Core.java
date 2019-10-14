@@ -5,6 +5,7 @@ import com.theincgi.autocrafter.proxy.ClientProxy;
 import com.theincgi.autocrafter.proxy.CommonProxy;
 import com.theincgi.autocrafter.proxy.ServerProxy;
 import net.minecraft.item.BlockItem;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 
@@ -25,11 +26,11 @@ public class Core {
    @Instance
    public static Core instance;
 
-   public static CommonProxy proxy;
    public static BlockAutoCrafter blockAutoCrafter;
-   public static ItemBlock itemAutoCrafter;
-   public static SimpleNetworkWrapper network;
+   public static BlockItem itemAutoCrafter;
+   public static TileEntityType<?> tileTypeAutoCraft;
 
+   public static SimpleNetworkWrapper network;
 
    @EventHandler
    public void preInit(FMLPreInitializationEvent e) {
