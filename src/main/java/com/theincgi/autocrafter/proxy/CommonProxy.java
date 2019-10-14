@@ -45,7 +45,7 @@ public class CommonProxy {
       GameRegistry.registerTileEntity(TileAutoCrafter.class, "com.theincgi.autocrafter.tileentity");
    }
 
-   public void init(FMLInitializationEvent e) {
+   public void init() {
       BlockAutoCrafter.addRecipe();
       NetworkRegistry.INSTANCE.registerGuiHandler(Core.instance, new GuiHandler());
       PacketClientChanged.Handler clientHandler = new PacketClientChanged.Handler();
@@ -100,7 +100,7 @@ public class CommonProxy {
 
       @SubscribeEvent //PreInit
       public static void commonSetup(FMLCommonSetupEvent event) {
-         //proxy.commonSetup();
+         proxy.commonSetup();
       }
    }
 

@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -21,6 +21,7 @@ public class ContainerAutoCrafter extends Container {
     public Slot targetSlot;
 
     public ContainerAutoCrafter(IInventory playerInv, TileAutoCrafter te) {
+        super();
         this.playerInv = playerInv;
         this.tileAutoCrafter = te;
         int slot = 0;
@@ -30,7 +31,7 @@ public class ContainerAutoCrafter extends Container {
         for(y = 0; y < 3; ++y) {
             for(x = 0; x < 3; ++x) {
                 final int sloooooot = slot;
-                this.func_75146_a(new Slot(this.tileAutoCrafter, slot++, 30 + x * 18, 17 + y * 18) {
+                this.addSlot(new Slot(this.tileAutoCrafter, slot++, 30 + x * 18, 17 + y * 18) {
                     public boolean func_75214_a(ItemStack stack) {
                         return ContainerAutoCrafter.this.tileAutoCrafter.isSlotAllowed(sloooooot, stack);
                     }
@@ -38,101 +39,102 @@ public class ContainerAutoCrafter extends Container {
             }
         }
 
-        this.func_75146_a(new Slot(this.tileAutoCrafter, slot++, 124, 49) {
-            public boolean func_75214_a(ItemStack stack) {
+        this.addSlot(new Slot(this.tileAutoCrafter, slot++, 124, 49) {
+            @Override
+            public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
-        this.func_75146_a(this.targetSlot = new Slot(this.tileAutoCrafter, slot++, 124, 18) {
-            public int func_178170_b(ItemStack stack) {
-                return 0;
+        this.addSlot(this.targetSlot = new Slot(this.tileAutoCrafter, slot++, 124, 18) {
+            public int getItemStackLimit(ItemStack stack) {return 0;}
+            @Override
+            public void onSlotChanged() {
+                super.onSlotChanged();
             }
-
-            public void func_75218_e() {
-                super.func_75218_e();
-            }
-
-            public boolean func_82869_a(EntityPlayer playerIn) {
+            @Override
+            public boolean canTakeStack(PlayerEntity playerIn) {
                 return true;
             }
-
-            public boolean func_75214_a(ItemStack stack) {
+            @Override
+            public boolean isItemValid(ItemStack stack) {
                 return false;
             }
         });
         slot = 0;
 
         for(y = 0; y < 9; ++y) {
-            this.func_75146_a(new Slot(playerInv, slot++, 8 + y * 18, 142));
+            this.addSlot(new Slot(playerInv, slot++, 8 + y * 18, 142));
         }
 
         slot = 9;
 
         for(y = 0; y < 3; ++y) {
             for(x = 0; x < 9; ++x) {
-                this.func_75146_a(new Slot(playerInv, slot++, 8 + x * 18, 84 + y * 18));
+                this.addSlot(new Slot(playerInv, slot++, 8 + x * 18, 84 + y * 18));
             }
         }
 
     }
 
-    public ItemStack func_82846_b(EntityPlayer playerIn, int index) {
-        ItemStack previous = ItemStack.field_190927_a;
-        Slot slot = (Slot)this.field_75151_b.get(index);
-        ContainerAutoCrafter.Slots catagory = ContainerAutoCrafter.Slots.getCatagory(index);
-        if (slot != null && slot.func_75216_d()) {
-            ItemStack current = slot.func_75211_c();
-            previous = current.func_77946_l();
-            if (catagory != null) {
-                switch(catagory) {
+    @Override
+    public ItemStack transferStackInSlot (PlayerEntity playerIn, int index) {
+        ItemStack previous = ItemStack.EMPTY;
+        Slot slot = (Slot)this.inventorySlots.get(index);
+        ContainerAutoCrafter.Slots category = ContainerAutoCrafter.Slots.getCategory(index);
+        if (slot != null && slot.getHasStack()) {
+            ItemStack current = slot.getStack();
+            previous = current.copy();
+            if (category != null) {
+                switch(category) {
                     case CRAFTING:
                     case OUTPUT:
-                        if (!this.func_75135_a(current, ContainerAutoCrafter.Slots.PLAYERINV.getStart(), ContainerAutoCrafter.Slots.PLAYERINV.getEnd() + 1, false)) {
-                            return ItemStack.field_190927_a;
+                        //case TARGET: target doesnt hold anything anymore
+                        if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.PLAYERINV.getStart(), ContainerAutoCrafter.Slots.PLAYERINV.getEnd() + 1, false)) {
+                            return ItemStack.EMPTY;
                         }
 
-                        if (!this.func_75135_a(current, ContainerAutoCrafter.Slots.HOTBAR.getStart(), ContainerAutoCrafter.Slots.HOTBAR.getEnd() + 1, false)) {
-                            return ItemStack.field_190927_a;
+                        if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.HOTBAR.getStart(), ContainerAutoCrafter.Slots.HOTBAR.getEnd() + 1, false)) {
+                            return ItemStack.EMPTY;
                         }
                         break;
                     case HOTBAR:
                     case PLAYERINV:
-                        if (this.tileAutoCrafter.getCrafts().func_190926_b()) {
-                            if (!this.func_75135_a(current, ContainerAutoCrafter.Slots.TARGET.getStart(), ContainerAutoCrafter.Slots.TARGET.getEnd() + 1, false)) {
-                                return ItemStack.field_190927_a;
+                        if (this.tileAutoCrafter.getCrafts().isEmpty()) {
+                            if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.TARGET.getStart(), ContainerAutoCrafter.Slots.TARGET.getEnd() + 1, false)) {
+                                return ItemStack.EMPTY;
                             }
-                        } else if (!this.func_75135_a(current, ContainerAutoCrafter.Slots.CRAFTING.getStart(), ContainerAutoCrafter.Slots.CRAFTING.getEnd() + 1, false)) {
-                            return ItemStack.field_190927_a;
+                        } else if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.CRAFTING.getStart(), ContainerAutoCrafter.Slots.CRAFTING.getEnd() + 1, false)) {
+                            return ItemStack.EMPTY;
                         }
                 }
             }
 
-            if (current.func_190916_E() <= 0) {
-                slot.func_75215_d(ItemStack.field_190927_a);
+            if (current.getCount() <= 0) {
+                slot.putStack(ItemStack.EMPTY);
             }
 
-            if (current.func_190916_E() == previous.func_190916_E()) {
-                return ItemStack.field_190927_a;
+            if (current.getCount() == previous.getCount()) {
+                return ItemStack.EMPTY;
             }
 
-            slot.func_190901_a(playerIn, current);
+            slot.onTake(playerIn, current);
         }
 
         return previous;
     }
 
-    private ItemStack moveToCatagory(ContainerAutoCrafter.Slots catagory, InventoryPlayer inventory, ItemStack containerStack) {
+    private ItemStack moveToCategory(ContainerAutoCrafter.Slots category, PlayerInventory inventory, ItemStack containerStack) {
         int i;
         ItemStack invStack;
-        for(i = catagory.getStart(); i <= catagory.getEnd(); ++i) {
-            invStack = inventory.func_70301_a(i);
-            if (invStack.func_77969_a(containerStack)) {
-                int addable = Math.min(invStack.func_77976_d() - invStack.func_190916_E(), containerStack.func_190916_E());
+        for(i = category.getStart(); i <= category.getEnd(); ++i) {
+            invStack = inventory.getStackInSlot(i);
+            if (invStack.isItemEqual(containerStack)) {
+                int addable = Math.min(invStack.getMaxStackSize() - invStack.getCount(), containerStack.getCount());
                 if (addable > 0) {
-                    invStack.func_190920_e(invStack.func_190916_E() + addable);
-                    containerStack.func_190920_e(containerStack.func_190916_E() - addable);
-                    if (containerStack.func_190916_E() == 0) {
-                        return ItemStack.field_190927_a;
+                    invStack.setCount(invStack.getCount() + addable);
+                    containerStack.setCount(containerStack.getCount() - addable);
+                    if (containerStack.getCount() == 0) {
+                        return ItemStack.EMPTY;
                     }
 
                     return containerStack;
@@ -140,13 +142,13 @@ public class ContainerAutoCrafter extends Container {
             }
         }
 
-        for(i = catagory.getStart(); i <= catagory.getEnd(); ++i) {
-            invStack = inventory.func_70301_a(i);
-            if (invStack.func_190926_b()) {
-                inventory.field_70462_a.set(i - ContainerAutoCrafter.Slots.PLAYERINV.getStart(), containerStack);
-                containerStack.func_190920_e(0);
-                if (containerStack.func_190916_E() == 0) {
-                    return ItemStack.field_190927_a;
+        for(i = category.getStart(); i <= category.getEnd(); ++i) {
+            invStack = inventory.getStackInSlot(i);
+            if (invStack.isEmpty()) {
+                inventory.mainInventory.set(i - ContainerAutoCrafter.Slots.PLAYERINV.getStart(), containerStack);
+                containerStack.setCount(0);
+                if (containerStack.getCount() == 0) {
+                    return ItemStack.EMPTY;
                 }
 
                 return containerStack;
@@ -156,13 +158,9 @@ public class ContainerAutoCrafter extends Container {
         return containerStack;
     }
 
-    public boolean func_75145_c(EntityPlayer playerIn) {
-        return true;
-    }
-
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return false;
+        return true;
     }
 
     private static enum Slots {
@@ -192,7 +190,7 @@ public class ContainerAutoCrafter extends Container {
             return this.y;
         }
 
-        public static ContainerAutoCrafter.Slots getCatagory(int index) {
+        public static ContainerAutoCrafter.Slots getCategory(int index) {
             ContainerAutoCrafter.Slots[] var1 = values();
             int var2 = var1.length;
 
