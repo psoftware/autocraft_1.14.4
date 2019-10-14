@@ -27,10 +27,9 @@ public class BlockAutoCrafter extends ContainerBlock implements ITileEntityProvi
 
    public BlockAutoCrafter() {
       super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f,10).lightValue(1));
-      //this.func_149663_c("autocrafter");
-      this.setRegistryName(Core.MODID);
-      //this.func_149647_a(CreativeTabs.field_78028_d);
 
+      //TODO: set creative tab (where??)
+      //this.func_149647_a(CreativeTabs.field_78028_d);
    }
 
 

@@ -31,15 +31,9 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy {
-  /* public void preInit(FMLPreInitializationEvent e) {
-      BlockHandler.init();
-      BlockHandler.reg();
-      MinecraftForge.EVENT_BUS.register(new BlockHandler.RegHandler());
-      GameRegistry.registerTileEntity(TileAutoCrafter.class, "com.theincgi.autocrafter.tileentity");
-   }
-
+  /* TODO: port all events
    public void init() {
-      BlockAutoCrafter.addRecipe();
+      // See this https://gist.github.com/williewillus/353c872bcf1a6ace9921189f6100d09a#gistcomment-2870154
       NetworkRegistry.INSTANCE.registerGuiHandler(Core.instance, new GuiHandler());
       PacketClientChanged.Handler clientHandler = new PacketClientChanged.Handler();
       PacketServerUpdated.Handler serverHandler = new PacketServerUpdated.Handler();
@@ -47,8 +41,7 @@ public class CommonProxy {
       Core.network.registerMessage(clientHandler, PacketClientChanged.class, 0, Side.SERVER);
       Core.network.registerMessage(serverHandler, PacketServerUpdated.class, 1, Side.CLIENT);
    }
-
-   //public void postInit(FMLPostInitializationEvent e) {}*/
+   */
 
    public boolean isClient() {
       return this instanceof ClientProxy;
@@ -59,26 +52,4 @@ public class CommonProxy {
    }
 
    public void sendPacketServer(IMessage packetTargetChanged) {}
-
-
-   @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-   public static class ForgeEventHandler {
-      @SubscribeEvent
-      public static void serverStarting(FMLServerStartingEvent evt)
-      {
-
-      }
-      @SubscribeEvent
-      public static void worldLoadEvent(WorldEvent.Load event) {
-         // Set renderer only on client side
-
-      }
-
-
-      @SubscribeEvent //PreInit
-      public static void commonSetup(FMLCommonSetupEvent event) {
-         proxy.commonSetup();
-      }
-   }
-
 }

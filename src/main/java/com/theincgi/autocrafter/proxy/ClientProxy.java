@@ -9,20 +9,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class ClientProxy extends CommonProxy {
-
-   public void preInit(FMLPreInitializationEvent e) {
-      super.preInit(e);
-   }
-
-   public void init(FMLInitializationEvent e) {
-      super.init(e);
-      BlockHandler.regRends();
-   }
-
-   public void postInit(FMLPostInitializationEvent e) {
-      super.postInit(e);
-   }
-
    public void sendPacketServer(IMessage packetTargetChanged) {
       Core.network.sendToServer(packetTargetChanged);
    }
