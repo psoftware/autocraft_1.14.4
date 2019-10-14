@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
 
 public class PacketClientChanged extends PacketTileChanged {
     public PacketClientChanged() {
@@ -54,35 +55,35 @@ public class PacketClientChanged extends PacketTileChanged {
         }
 
         public PacketTileChanged onMessage(final PacketClientChanged message, final MessageContext ctx) {
-            ctx.getServerHandler().field_147369_b.func_71121_q().func_152344_a(new Runnable() {
+            ctx.getServerHandler().playerEntity.getServerWorld().addScheduledTask(new Runnable() {
                 public void run() {
-                    TileAutoCrafter tac = (TileAutoCrafter)ctx.getServerHandler().field_147369_b.func_71121_q().func_175625_s(message.p);
+                    TileAutoCrafter tac = (TileAutoCrafter)ctx.getServerHandler().playerEntity.getServerWorld().getTileEntity(message.p);
                     CompoundNBT response = new CompoundNBT();
-                    if (message.nbt.func_74764_b("targetChanged")) {
-                        CompoundNBT how = message.nbt.func_74775_l("targetChanged");
-                        if (how.func_74764_b("next")) {
+                    if (message.nbt.contains("targetChanged")) {
+                        CompoundNBT how = message.nbt.getCompound("targetChanged");
+                        if (how.contains("next")) {
                             tac.nextRecipe();
-                        } else if (how.func_74764_b("prev")) {
+                        } else if (how.contains("prev")) {
                             tac.prevRecipe();
-                        } else if (how.func_74764_b("item")) {
-                            tac.updateRecipes(new ItemStack(how.func_74775_l("item")), 0);
+                        } else if (how.contains("item")) {
+                            tac.updateRecipes(ItemStack.read(how.getCompound("item")), 0);
                         } else {
                             System.err.println("Unhandled case in PacketClientChanged");
                         }
 
-                        response.func_74782_a("recipe", tac.getRecipe().getNBT());
-                        response.func_74782_a("targetSlot", tac.getCrafts().serializeNBT());
-                        response.func_74768_a("rIndex", tac.getCurrentRecipeIndex());
-                    } else if (message.nbt.func_74764_b("getAll")) {
-                        response.func_74782_a("tile", tac.serializeNBT());
+                        response.put("recipe", tac.getRecipe().getNBT());
+                        response.put("targetSlot", tac.getCrafts().serializeNBT());
+                        response.putInt("rIndex", tac.getCurrentRecipeIndex());
+                    } else if (message.nbt.contains("getAll")) {
+                        response.put("tile", tac.serializeNBT());
                     } else {
-                        response.func_74782_a("recipe", tac.getRecipe().getNBT());
-                        response.func_74782_a("targetSlot", tac.func_70301_a(10).serializeNBT());
-                        response.func_74768_a("rIndex", tac.getCurrentRecipeIndex());
+                        response.put("recipe", tac.getRecipe().getNBT());
+                        response.put("targetSlot", tac.func_70301_a(10).serializeNBT());
+                        response.putInt("rIndex", tac.getCurrentRecipeIndex());
                     }
 
-                    if (response.func_150296_c().size() > 0) {
-                        TargetPoint target = new TargetPoint(ctx.getServerHandler().field_147369_b.field_71093_bK, (double)message.p.func_177958_n(), (double)message.p.func_177956_o(), (double)message.p.func_177952_p(), 8.0D);
+                    if (response.keySet().size() > 0) {
+                        TargetPoint target = new TargetPoint(ctx.getServerHandler().playerEntity.dimension, (double)message.p.getX(), (double)message.p.getY(), (double)message.p.getZ(), 8.0D);
                         Core.network.sendToAllAround(new PacketServerUpdated(message.p, response), target);
                     }
 

@@ -26,15 +26,13 @@ public class BlockAutoCrafter extends ContainerBlock implements ITileEntityProvi
 
 
    public BlockAutoCrafter() {
-      super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f,10).lightValue(1).);
+      super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f,10).lightValue(1));
       //this.func_149663_c("autocrafter");
       this.setRegistryName(Core.MODID);
       //this.func_149647_a(CreativeTabs.field_78028_d);
 
    }
 
-   @Override
-   public static void addRecipe() {}
 
    @Override
    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
