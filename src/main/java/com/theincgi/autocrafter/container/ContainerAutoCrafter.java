@@ -5,14 +5,15 @@
 
 package com.theincgi.autocrafter.container;
 
+import com.theincgi.autocrafter.Core;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 
 public class ContainerAutoCrafter extends Container {
     private IInventory playerInv;
@@ -20,8 +21,14 @@ public class ContainerAutoCrafter extends Container {
     private ItemStack lastTarget = null;
     public Slot targetSlot;
 
-    public ContainerAutoCrafter(IInventory playerInv, TileAutoCrafter te) {
-        super();
+
+    public ContainerAutoCrafter (int windowId, PlayerInventory inv, PacketBuffer extraData){
+        super(Core.containerAutoCraft,windowId);//used to initialize clint side container
+
+    }
+
+    public ContainerAutoCrafter(PlayerInventory playerInv, TileAutoCrafter te) {
+        super(Core.containerAutoCraft,0);
         this.playerInv = playerInv;
         this.tileAutoCrafter = te;
         int slot = 0;

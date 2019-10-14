@@ -1,9 +1,11 @@
 package com.theincgi.autocrafter;
 
 import com.theincgi.autocrafter.blocks.BlockAutoCrafter;
+import com.theincgi.autocrafter.container.ContainerAutoCrafter;
 import com.theincgi.autocrafter.proxy.ClientProxy;
 import com.theincgi.autocrafter.proxy.CommonProxy;
 import com.theincgi.autocrafter.proxy.ServerProxy;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,6 +28,7 @@ public class Core {
    public static BlockAutoCrafter blockAutoCrafter;
    public static BlockItem itemAutoCrafter;
    public static TileEntityType<?> tileTypeAutoCraft;
+   public static ContainerType<ContainerAutoCrafter> containerAutoCraft;
 
    public static SimpleNetworkWrapper network;
 
