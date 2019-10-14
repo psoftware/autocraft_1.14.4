@@ -28,25 +28,26 @@ public class PacketServerUpdated extends PacketTileChanged {
         }
 
         public IMessage onMessage(final PacketServerUpdated message, MessageContext ctx) {
-            Minecraft.func_71410_x().func_152344_a(new Runnable() {
+            Minecraft.getInstance().execute(new Runnable() {
                 public void run() {
-                    TileAutoCrafter ourTile = (TileAutoCrafter)Minecraft.func_71410_x().field_71439_g.field_70170_p.func_175625_s(message.p);
-                    if (message.nbt.func_74764_b("tile")) {
-                        ourTile.func_145839_a(message.nbt.func_74775_l("tile"));
+                    TileAutoCrafter ourTile = (TileAutoCrafter)Minecraft.getInstance().player.world.getTileEntity(message.p);
+                    if (message.nbt.contains("tile")) {
+                        ourTile.read(message.nbt.getCompound("tile"));
                     } else {
-                        if (message.nbt.func_74764_b("targetSlot")) {
-                            ItemStack newTarget = new ItemStack(message.nbt.func_74775_l("targetSlot"));
+                        if (message.nbt.contains("targetSlot")) {
+                            ItemStack newTarget =  ItemStack.read(message.nbt.getCompound("targetSlot"));
                             if (!Recipe.matches(ourTile.getCrafts(), newTarget)) {
                                 ourTile.setCrafts(newTarget);
                             }
                         }
 
-                        if (message.nbt.func_74764_b("recipe")) {
-                            ourTile.setRecipe(message.nbt.func_150295_c("recipe", 10));
+                        if (message.nbt.contains("recipe")) {
+                            assert ourTile != null;
+                            ourTile.setRecipe(message.nbt.getList("recipe", 10));
                         }
 
-                        if (message.nbt.func_74764_b("rIndex")) {
-                            ourTile.setCurrentRecipeIndex(message.nbt.func_74762_e("rIndex"));
+                        if (message.nbt.contains("rIndex")) {
+                            ourTile.setCurrentRecipeIndex(message.nbt.getInt("rIndex"));
                         }
 
                     }

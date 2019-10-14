@@ -2,25 +2,29 @@ package com.theincgi.autocrafter.tileEntity;
 
 import com.theincgi.autocrafter.Recipe;
 import com.theincgi.autocrafter.Utils;
-import com.theincgi.autocrafter.tileEntity.ItemStackHandlerAutoCrafter;
+
 import java.util.List;
-import net.minecraft.entity.player.EntityPlayer;
+
+
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInventory {
+public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, ISidedInventory {
 
    public static final int OUTPUT_SLOT = 9;
    public static final int TARGET_SLOT = 10;
@@ -36,52 +40,57 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
 
 
    public TileAutoCrafter() {
-      this.inventory = NonNullList.func_191197_a(this.func_70302_i_(), ItemStack.field_190927_a);
+      super();
+      this.inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
       this.recipe = new Recipe();
-      this.crafts = ItemStack.field_190927_a;
+      this.crafts = ItemStack.EMPTY;
       this.currentRecipeIndex = 0;
       this.ishac = new ItemStackHandlerAutoCrafter(this);
    }
 
-   public NBTTagCompound func_189515_b(NBTTagCompound compound) {
-      super.func_189515_b(compound);
-      if(this.func_145818_k_()) {
-         compound.func_74778_a("customName", this.customName);
+   @Override
+   public CompoundNBT write(CompoundNBT compound) {
+      super.write(compound);
+      if(this.hasCustomName()) {
+         compound.putString("customName", this.customName);
       }
 
-      compound.func_74782_a("inventory", ItemStackHelper.func_191282_a(new NBTTagCompound(), this.inventory));
-      compound.func_74782_a("recipe", this.recipe.getNBT());
-      compound.func_74782_a("crafts", this.crafts.serializeNBT());
+      compound.put("inventory", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
+      compound.put("recipe", this.recipe.getNBT());
+      compound.put("crafts", this.crafts.serializeNBT());
       return compound;
    }
 
-   public void func_145839_a(NBTTagCompound compound) {
-      super.func_145839_a(compound);
-      if(compound.func_74764_b("customName")) {
-         this.customName = compound.func_74779_i("customName");
+   @Override
+   public void read(CompoundNBT compound) {
+      super.read(compound);
+      if(compound.contains("customName")) {
+         this.customName = compound.getString("customName");
       }
 
-      if(compound.func_74764_b("inventory")) {
-         ItemStackHelper.func_191283_b(compound.func_74775_l("inventory"), this.inventory);
+      if(compound.contains("inventory")) {
+         ItemStackHelper.loadAllItems(compound.getCompound("inventory"), this.inventory);
       }
 
-      if(compound.func_74764_b("recipe")) {
-         this.recipe = Recipe.fromNBT(compound.func_150295_c("recipe", 10));
+      if(compound.contains("recipe")) {
+         this.recipe = Recipe.fromNBT(compound.getList("recipe", 10));
       }
 
-      if(compound.func_74764_b("crafts")) {
-         this.crafts = new ItemStack(compound.func_74775_l("crafts"));
+      if(compound.contains("crafts")) {
+         this.crafts =  ItemStack.read(compound.getCompound("crafts"));
       }
 
    }
 
-   public int func_70302_i_() {
+   @Override
+   public int getSizeInventory() {
       return 11;
    }
 
-   public boolean func_191420_l() {
+   @Override
+   public boolean isEmpty() {
       for(int i = 0; i < this.inventory.size(); ++i) {
-         if(!((ItemStack)this.inventory.get(i)).func_190926_b()) {
+         if(!((ItemStack)this.inventory.get(i)).isEmpty()) {
             return false;
          }
       }
@@ -89,116 +98,143 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
       return true;
    }
 
-   public ItemStack func_70301_a(int index) {
-      return index >= 0 && index < this.func_70302_i_()?(ItemStack)this.inventory.get(index):ItemStack.field_190927_a;
+   @Override
+   public ItemStack getStackInSlot (int index) {
+      return index >= 0 && index < this.getSizeInventory() ? (ItemStack) this.inventory.get(index):ItemStack.EMPTY;
    }
 
-   public ItemStack func_70298_a(int index, int count) {
-      ItemStack s = ItemStackHelper.func_188382_a(this.inventory, index, count);
-      if(this.func_70301_a(index).func_190916_E() == 0) {
-         this.func_70299_a(index, ItemStack.field_190927_a);
+   @Override
+   public ItemStack decrStackSize(int index, int count) {
+      ItemStack s = ItemStackHelper.getAndSplit(this.inventory, index, count);
+      if(this.getStackInSlot(index).getCount() == 0) {
+         this.setInventorySlotContents(index, ItemStack.EMPTY);
       }
 
       return s;
    }
 
+
    public ItemStack SIMULATEdecrStackSize(int index, int count) {
-      ItemStack temp = this.func_70301_a(index).func_77946_l();
-      return temp.func_77979_a(count);
+      ItemStack temp = getStackInSlot(index).copy();
+      return temp.split(count);
    }
 
-   public ItemStack func_70304_b(int index) {
-      return ItemStackHelper.func_188383_a(this.inventory, index);
+   @Override
+   public ItemStack removeStackFromSlot(int index) {
+      return ItemStackHelper.getAndRemove(inventory, index);
    }
 
-   public void func_70299_a(int index, ItemStack stack) {
+   @Override
+   public void setInventorySlotContents(int index, ItemStack stack) {
       ItemStack itemstack = (ItemStack)this.inventory.get(index);
       this.inventory.set(index, stack);
-      if(stack.func_190916_E() > this.func_70297_j_()) {
-         stack.func_190920_e(this.func_70297_j_());
+      if(stack.getCount() > this.func_70297_j_()) {
+         stack.setCount(this.func_70297_j_());
       }
 
-      this.func_70296_d();
+      this.markDirty();
    }
 
-   public int func_70297_j_() {
+   @Override
+   public int getInventoryStackLimit() {
       return 64;
    }
 
-   public boolean func_70300_a(EntityPlayer player) {
-      return this.field_145850_b.func_175625_s(this.func_174877_v()) == this && player.func_174818_b(this.field_174879_c.func_177963_a(0.5D, 0.5D, 0.5D)) <= 64.0D;
+   @Override
+   public boolean isUsableByPlayer(PlayerEntity player) {
+      return world.getTileEntity(getPos()) == this &&
+              player.getDistanceSq(.5, .5, .5) <= 64;
    }
 
-   public void func_174889_b(EntityPlayer player) {}
+   @Override
+   public void openInventory(EntityPlayer player) {
+   }
 
-   public void func_174886_c(EntityPlayer player) {}
+   @Override
+   public void closeInventory(EntityPlayer player) {
+   }
 
-   public boolean func_94041_b(int index, ItemStack stack) {
+   @Override
+   public boolean isItemValidForSlot(int index, ItemStack stack) {
       return true;
    }
 
-   public int func_174887_a_(int id) {
+   @Override
+   public int getField(int id) {
       return 0;
    }
 
-   public void func_174885_b(int id, int value) {}
+   @Override
+   public void setField(int id, int value) {
+   }
 
-   public int func_174890_g() {
+   @Override
+   public int getFieldCount() {
       return 0;
    }
 
-   public void func_174888_l() {
-      for(int i = 0; i < this.inventory.size(); ++i) {
-         this.inventory.set(i, ItemStack.field_190927_a);
+   @Override
+   public void clear() {
+
+      for(int i = 0; i<inventory.size(); i++){
+         inventory.set(i, ItemStack.EMPTY);
       }
-
    }
 
-   public String func_70005_c_() {
-      return this.func_145818_k_()?this.customName:"Auto Crafter";
+
+   @Override
+   public String getName() {
+
+      return hasCustomName()?customName:"Auto Crafter";
    }
 
-   public boolean func_145818_k_() {
-      return this.customName != null;
+   @Override
+   public boolean hasCustomName() {
+      return customName!=null;
+   }
+   @Override
+   public ITextComponent getDisplayName() {
+      return Utils.IText(getName());
    }
 
-   public ITextComponent func_145748_c_() {
-      return Utils.IText(this.func_70005_c_());
-   }
-
-   public int[] func_180463_a(EnumFacing side) {
-      return side.equals(EnumFacing.DOWN)?OUTPUT_SLOTS:INPUT_SLOTS;
+   @Override
+   public int[] getSlotsForFace(Direction side) {
+      if(side.equals(Direction.DOWN)){return OUTPUT_SLOTS;}
+      return INPUT_SLOTS;
    }
 
    public boolean isSlotAllowed(int index, ItemStack itemStack) {
       return index < 9 && this.recipe.matchesRecipe(index, itemStack);
    }
 
-   public boolean func_180462_a(int index, ItemStack itemStackIn, EnumFacing direction) {
-      return this.isSlotAllowed(index, itemStackIn);
+   @Override
+   public boolean canInsertItem(int index, ItemStack itemStackIn, Direction direction) {
+      //System.out.printf("canInsertItem: %d %s %s\n",index, itemStackIn.getItem().getRegistryName().toString(), isSlotAllowed(index, itemStackIn) && nextHasSameOrMore(index, itemStackIn));
+      return isSlotAllowed(index, itemStackIn);
    }
 
-   public boolean func_180461_b(int index, ItemStack stack, EnumFacing direction) {
-      return index == 9 || index < 9 && !this.recipe.matchesRecipe(index, stack);
+   @Override
+   public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
+      return index==OUTPUT_SLOT || (index<9&&!recipe.matchesRecipe(index, stack));
    }
 
    public void setCustomName(String displayName) {
       this.customName = displayName;
-      this.func_70296_d();
+      this.markDirty();
    }
 
    public void setRecipe(IRecipe recipe) {
       this.recipe.setRecipe(recipe);
-      this.func_70296_d();
+      this.markDirty();
    }
 
-   public void setRecipe(NBTTagList recipeTag) {
+   public void setRecipe(ListNBT recipeTag) {
       this.recipe = Recipe.fromNBT(recipeTag);
    }
 
    public void updateRecipes(ItemStack crafts, int index) {
       this.crafts = crafts;
-      this.recipes = Utils.getValid(crafts);
+      this.recipes = Utils.getValid(world,crafts);
       this.currentRecipeIndex = index % Math.max(1, this.recipes.size());
       if(this.recipes.size() > 0) {
          this.setRecipe((IRecipe)this.recipes.get(this.currentRecipeIndex));
@@ -206,7 +242,7 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
          this.recipe.clearRecipe();
       }
 
-      this.func_70296_d();
+      this.markDirty();
    }
 
    public Recipe getRecipe() {
@@ -248,20 +284,24 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
       return this.currentRecipeIndex;
    }
 
-   public boolean hasCapability(Capability capability, EnumFacing facing) {
+   @Override
+   public boolean hasCapability(Capability capability, Direction facing) {
       return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY?true:super.hasCapability(capability, facing);
    }
 
-   public Object getCapability(Capability capability, EnumFacing facing) {
+   @Override
+   public Object getCapability(Capability capability, Direction facing) {
       return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY?this.ishac:super.getCapability(capability, facing);
    }
 
-   public void func_73660_a() {
-      if(!this.field_145850_b.func_175640_z(this.field_174879_c) && this.field_145850_b.func_175687_A(this.field_174879_c) <= 0) {
-         if(!this.recipe.getOutput().func_190926_b()) {
-            if(this.func_70301_a(9).func_190916_E() + this.recipe.getOutput().func_190916_E() <= this.recipe.getOutput().func_77976_d()) {
-               if(Recipe.matches(this.func_70301_a(9), this.recipe.getOutput()) || this.func_70301_a(9).func_190926_b()) {
-                  this.distibuteItems();
+   @Override
+   public void tick() {
+      if(!this.world.isBlockPowered(pos) && world.isBlockIndirectlyGettingPowered(pos) <= 0) {
+         if(!this.recipe.getOutput().isEmpty()) {
+            if(getStackInSlot(OUTPUT_SLOT).getCount() + this.recipe.getOutput().getCount() <= this.recipe.getOutput().getMaxStackSize()) {
+               if(Recipe.matches(getStackInSlot(OUTPUT_SLOT), this.recipe.getOutput()) || getStackInSlot(OUTPUT_SLOT).isEmpty()) {
+
+                  this.distributeItems();
 
                   for(int leftovers = 0; leftovers < 9; ++leftovers) {
                      if(!this.recipe.matchesRecipe(leftovers, (ItemStack)this.inventory.get(leftovers))) {
@@ -269,49 +309,49 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
                      }
                   }
 
-                  NonNullList var3 = this.recipe.getLeftovers(this.inventory, 0, 9);
+                  NonNullList <ItemStack> leftovers = this.recipe.getLeftovers(this.inventory, 0, 9);
 
                   for(int i = 0; i < 9; ++i) {
-                     ((ItemStack)this.inventory.get(i)).func_190918_g(1);
-                     if(((ItemStack)this.inventory.get(i)).func_190916_E() <= 0) {
-                        this.func_70299_a(i, ItemStack.field_190927_a);
+                     ((ItemStack)this.inventory.get(i)).shrink(1);
+                     if(((ItemStack)this.inventory.get(i)).getCount() <= 0) {
+                        this.setInventorySlotContents(i, ItemStack.EMPTY);
                      }
 
-                     if(!((ItemStack)var3.get(i)).func_190926_b()) {
-                        if(((ItemStack)this.inventory.get(i)).func_190926_b()) {
-                           this.func_70299_a(i, (ItemStack)var3.get(i));
+                     if(!((ItemStack)leftovers.get(i)).isEmpty()) {
+                        if(((ItemStack)this.inventory.get(i)).isEmpty()) {
+                           this.setInventorySlotContents(i, (ItemStack)leftovers.get(i));
                         } else {
-                           InventoryHelper.func_180173_a(this.field_145850_b, (double)this.field_174879_c.func_177958_n(), (double)this.field_174879_c.func_177956_o(), (double)this.field_174879_c.func_177952_p(), (ItemStack)var3.get(i));
+                           InventoryHelper.spawnItemStack(this.world, (double)this.pos.getX(), (double)this.pos.getY(), (double)this.pos.getZ(), (ItemStack)leftovers.get(i));
                         }
                      }
                   }
 
-                  if(this.func_70301_a(9).func_190926_b()) {
-                     this.func_70299_a(9, this.recipe.getOutput());
+                  if(getStackInSlot(OUTPUT_SLOT).isEmpty()) {
+                     setInventorySlotContents(OUTPUT_SLOT, this.recipe.getOutput());
                   } else {
-                     this.func_70301_a(9).func_190917_f(this.recipe.getOutput().func_190916_E());
+                     getStackInSlot(OUTPUT_SLOT).grow(this.recipe.getOutput().getCount());
                   }
 
-                  this.func_70296_d();
+                  this.markDirty();
                }
             }
          }
       }
    }
 
-   private void distibuteItems() {
+   private void distributeItems() {
       for(int i = 0; i < 9; ++i) {
-         ItemStack current = this.func_70301_a(i);
-         if(!current.func_190926_b()) {
+         ItemStack current = getStackInSlot(i);
+         if(!current.isEmpty()) {
             int nextMatch = this.nextMatch(i);
             if(nextMatch >= 0) {
-               if(this.func_70301_a(nextMatch).func_190926_b()) {
-                  if(current.func_190916_E() >= 2) {
-                     this.func_70299_a(nextMatch, current.func_77979_a(1));
+               if(getStackInSlot(nextMatch).isEmpty()) {
+                  if(current.getCount() >= 2) {
+                     setInventorySlotContents(nextMatch, current.split(1));
                   }
-               } else if(current.func_190916_E() > this.func_70301_a(nextMatch).func_190916_E()) {
-                  current.func_190918_g(1);
-                  this.func_70301_a(nextMatch).func_190917_f(1);
+               } else if(current.getCount() > getStackInSlot(nextMatch).getCount()) {
+                  current.shrink(1);
+                  getStackInSlot(nextMatch).grow(1);
                }
             }
          }
@@ -320,11 +360,11 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
    }
 
    private int nextMatch(int j) {
-      ItemStack is = this.func_70301_a(j);
+      ItemStack is = getStackInSlot(j);
 
       for(int i = 0; i < 9; ++i) {
          int c = (i + j + 1) % 9;
-         if(Recipe.matches(is, this.func_70301_a(c)) || this.func_70301_a(c).func_190926_b() && this.recipe.matchesRecipe(c, is)) {
+         if(Recipe.matches(is, getStackInSlot(c)) || getStackInSlot(c).isEmpty() && this.recipe.matchesRecipe(c, is)) {
             return c == j?-1:c;
          }
       }
@@ -339,5 +379,6 @@ public class TileAutoCrafter extends TileEntity implements ITickable, ISidedInve
    public void setCrafts(ItemStack itemStack) {
       this.crafts = itemStack;
    }
+
 
 }
