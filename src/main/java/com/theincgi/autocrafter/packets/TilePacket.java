@@ -1,13 +1,11 @@
 package com.theincgi.autocrafter.packets;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public abstract class TilePacket implements IMessage {
-
+public abstract class TilePacket {
    BlockPos p;
-
 
    public TilePacket() {}
 
@@ -15,13 +13,17 @@ public abstract class TilePacket implements IMessage {
       this.p = p;
    }
 
-   public void fromBytes(ByteBuf buf) {
-      this.p = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-   }
-
-   public void toBytes(ByteBuf buf) {
+   // p -> buff
+   public void subEncode(PacketBuffer buf)
+   {
       buf.writeInt(this.p.getX());
       buf.writeInt(this.p.getY());
       buf.writeInt(this.p.getZ());
+   }
+
+   // buff -> p
+   public void subDecode(PacketBuffer buf)
+   {
+      this.p = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
    }
 }
