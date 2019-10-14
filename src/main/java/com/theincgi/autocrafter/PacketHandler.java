@@ -34,19 +34,17 @@ public class PacketHandler {
         return HANDLER;
     }
 
-    //public static void sendToAllNearExcept(@Nullable ServerPlayerEntity except, double x, double y, double z, double radius, DimensionType dimension, Object packetIn) {
-    public static void sendToAllNearExcept(PacketDistributor.TargetPoint tp,  Object packetIn) {
+    /* // Not used because it's implemented by forge, but can be useful in future
+    public static void sendToAllNearExcept(@Nullable ServerPlayerEntity except, double x, double y, double z, double radius, DimensionType dimension, Object packetIn) {
         for (ServerPlayerEntity player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers())
-            if (player != tp.except && player.dimension == dimension) {
+            if (player != except && player.dimension == dimension) {
                 double d0 = x - player.posX;
                 double d1 = y - player.posY;
                 double d2 = z - player.posZ;
-                if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) {
+                if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius)
                     HANDLER.sendTo(packetIn, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
-                    HANDLER.se
-                }
             }
         }
-
+     */
     }
 }
