@@ -19,9 +19,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.CompoundIngredient;
-import net.minecraftforge.oredict.OreIngredient;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
+
 
 public class Recipe {
     ItemStack output;
@@ -32,6 +30,7 @@ public class Recipe {
     }
 
     public void setRecipe(IRecipe iRecipe) {
+
         this.output = iRecipe.getRecipeOutput();
 
         for(int i = 0; i < this.items.size(); ++i)
@@ -47,11 +46,11 @@ public class Recipe {
         } else {
             Object o;
             ItemStack is;
-            OreIngredient oreIngredient;
+            //OreIngredient oreIngredient;
             CompoundIngredient ci;
             Ingredient ing;
 
-            if (iRecipe instanceof ShapedOreRecipe) {
+            /*if (iRecipe instanceof ShapedOreRecipe) {
                 ShapedOreRecipe sor = (ShapedOreRecipe)iRecipe;
 
                 for(int i = 0; i < sor.func_192400_c().size(); ++i) {
@@ -75,7 +74,7 @@ public class Recipe {
                         Utils.log("AutoCrafter: ShapedOreRecipe missing case '" + o.getClass() + "'");
                     }
                 }
-            } else if (iRecipe instanceof ShapelessRecipe) {
+            } else */if (iRecipe instanceof ShapelessRecipe) {
                 ShapelessRecipe sr = (ShapelessRecipe)iRecipe;
 
                 for(int i = 0; i < sr.getIngredients().size(); ++i) {
@@ -86,7 +85,7 @@ public class Recipe {
 
                     this.items.set(i, new Recipe.ItemOptions(ios));
                 }
-            } else if (iRecipe instanceof ShapelessOreRecipe) {
+            }/* else if (iRecipe instanceof ShapelessOreRecipe) {
                 ShapelessOreRecipe slor = (ShapelessOreRecipe)iRecipe;
 
                 for(int i = 0; i < slor.func_192400_c().size(); ++i) {
@@ -114,7 +113,7 @@ public class Recipe {
                         Utils.log("AutoCrafter: ShaplessOreRecipe missing case '" + o.getClass() + "'");
                     }
                 }
-            } else {
+            }*/ else {
                 this.output = ItemStack.EMPTY;
                 Utils.log("It seems " + iRecipe.getClass().toGenericString() + " isn't a supported recipe type.");
             }
@@ -287,9 +286,9 @@ public class Recipe {
             Collections.addAll(this.opts, matching);
         }
 
-        public ItemOptions(OreIngredient i) {
+       /* public ItemOptions(OreIngredient i) {
             this(i.getMatchingStacks());
-        }
+        }*/
 
         public ItemOptions(CompoundIngredient ci) {
             this(ci.getMatchingStacks());

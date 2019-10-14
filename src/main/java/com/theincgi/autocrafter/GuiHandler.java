@@ -27,7 +27,7 @@ public class GuiHandler implements IGuiHandler {
       switch(ID) {
       case 0:
          TileAutoCrafter tac = (TileAutoCrafter)world.getTileEntity(new BlockPos(x, y, z));
-         return new GuiAutoCrafter(player.inventory, tac);
+         return new GuiAutoCrafter(player.inventory, tac,  );
       default:
          return null;
       }

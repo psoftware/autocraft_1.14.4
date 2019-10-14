@@ -14,11 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -128,8 +126,8 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    public void setInventorySlotContents(int index, ItemStack stack) {
       ItemStack itemstack = (ItemStack)this.inventory.get(index);
       this.inventory.set(index, stack);
-      if(stack.getCount() > this.func_70297_j_()) {
-         stack.setCount(this.func_70297_j_());
+      if(stack.getCount() > this.getInventoryStackLimit()) {
+         stack.setCount(this.getInventoryStackLimit());
       }
 
       this.markDirty();
@@ -147,16 +145,17 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    }
 
    @Override
-   public void openInventory(EntityPlayer player) {
+   public void openInventory(PlayerEntity player) {
    }
 
    @Override
-   public void closeInventory(EntityPlayer player) {
+   public void closeInventory(PlayerEntity player) {
    }
 
    @Override
    public boolean isItemValidForSlot(int index, ItemStack stack) {
       return true;
+
    }
 
    @Override

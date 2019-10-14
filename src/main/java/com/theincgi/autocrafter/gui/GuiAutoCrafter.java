@@ -45,12 +45,12 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     private TileAutoCrafter tileAutoCrafter;
     private ContainerAutoCrafter container;
 
-    public GuiAutoCrafter(PlayerInventory playerInv, TileAutoCrafter te , ITextComponent name)  {
-        super(new ContainerAutoCrafter(playerInv, te),playerInv,name);
+    public GuiAutoCrafter(ContainerAutoCrafter te, PlayerInventory playerInv , ITextComponent name)  {
+        super(te,playerInv,name);
         this.prev = new GuiAutoCrafter.Button(108, 17, 11, 18, 0.6901961F, 0.0F, 0.7294118F, 0.07058824F, this.background);
         this.next = new GuiAutoCrafter.Button(145, 17, 11, 18, 0.7294118F, 0.0F, 0.7764706F, 0.07058824F, this.background);
         this.playerInv = playerInv;
-        this.tileAutoCrafter = te;
+       // this.tileAutoCrafter = te;
         this.container = (ContainerAutoCrafter)super.getContainer();
     }
 
@@ -109,8 +109,8 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = this.tileAutoCrafter.getDisplayName().getUnformattedText();
-        
+        String s = this.tileAutoCrafter.getDisplayName().getUnformattedComponentText();
+
         fontRendererObj.drawString(s, 88-fontRendererObj.getStringWidth(s)/2, 6, 0x404040);
         this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 0x404040);
     }

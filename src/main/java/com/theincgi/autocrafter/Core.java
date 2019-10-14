@@ -1,16 +1,21 @@
 package com.theincgi.autocrafter;
 
 import com.theincgi.autocrafter.blocks.BlockAutoCrafter;
+import com.theincgi.autocrafter.container.ContainerAutoCrafter;
+import com.theincgi.autocrafter.gui.GuiAutoCrafter;
 import com.theincgi.autocrafter.proxy.ClientProxy;
 import com.theincgi.autocrafter.proxy.CommonProxy;
 import com.theincgi.autocrafter.proxy.ServerProxy;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,6 +35,7 @@ public class Core {
    public static BlockAutoCrafter blockAutoCrafter;
    public static BlockItem itemAutoCrafter;
    public static TileEntityType<?> tileTypeAutoCraft;
+   public static ContainerType<ContainerAutoCrafter> containerAutoCraft;
 
    public Core() {
       MinecraftForge.EVENT_BUS.register(BlockRegistrationHandler.class);
@@ -42,6 +48,14 @@ public class Core {
            Item i = block.asItem();
            Minecraft.getInstance().func_175599_af().func_175037_a().func_178086_a(i, 0, new ModelResourceLocation(block.getRegistryName(), "inventory"));
        }*/
+
+      @SubscribeEvent
+      public static void registerContainer(RegistryEvent.Register<ContainerType<?>> event){
+         Core.containerAutoCraft =
+                 (ContainerType<ContainerAutoCrafter>) (IForgeContainerType.create(ContainerAutoCrafter::new).setRegistryName(Core.MODID));
+         event.getRegistry().register(Core.containerAutoCraft);
+         ScreenManager.registerFactory(Core.containerAutoCraft, GuiAutoCrafter::new);
+      }
 
       @SubscribeEvent
       public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
