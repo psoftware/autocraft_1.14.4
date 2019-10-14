@@ -6,15 +6,16 @@
 package com.theincgi.autocrafter;
 
 import com.theincgi.autocrafter.blocks.BlockAutoCrafter;
+import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BlockHandler {
     public BlockHandler() {
@@ -22,31 +23,29 @@ public class BlockHandler {
 
     public static void init() {
         Core.blockAutoCrafter = new BlockAutoCrafter();
-        Core.itemAutoCrafter = new ItemBlock(Core.blockAutoCrafter) {
-            public String func_77653_i(ItemStack stack) {
-                return "Auto Crafter";
-            }
-        };
+        Core.itemAutoCrafter = new BlockItem(Core.blockAutoCrafter, new Item.Properties().group(ItemGroup.DECORATIONS));
+        // registry name always not null (if block has been correctly inserted) because
+        // block registration event is fired always before item event (forge docs)
         Core.itemAutoCrafter.setRegistryName(Core.blockAutoCrafter.getRegistryName());
+        Core.tileTypeAutoCraft = TileEntityType.Builder.create(TileAutoCrafter::new, Core.blockAutoCrafter).build(null)
+                .setRegistryName(Core.MODID, "testblocktileentity");
     }
 
-    public static void reg() {
-    }
+    // Model is loaded automatically for 1.14
+    /*
+    private static void regRenderer(Block block) {
+        Item i = block.asItem();
+        Minecraft.getInstance().func_175599_af().func_175037_a().func_178086_a(i, 0, new ModelResourceLocation(block.getRegistryName(), "inventory"));
+    }*/
 
-    public static void regRends() {
-        regRenderer(Core.blockAutoCrafter);
-    }
-
-    private static void regRenderer(Block b) {
-        Item i = Item.func_150898_a(b);
-        Minecraft.func_71410_x().func_175599_af().func_175037_a().func_178086_a(i, 0, new ModelResourceLocation(b.getRegistryName(), "inventory"));
-    }
-
-    @EventBusSubscriber(
-            modid = "autocrafter"
-    )
+    @EventBusSubscriber(modid = Core.MODID)
     public static class RegHandler {
         public RegHandler() {
+        }
+
+        @SubscribeEvent
+        public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
+            event.getRegistry().register(Core.tileTypeAutoCraft);
         }
 
         @SubscribeEvent
