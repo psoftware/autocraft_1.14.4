@@ -10,39 +10,40 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextComponent.Serializer;
+import net.minecraft.world.World;
 
 public class Utils {
     public Utils() {
     }
 
     public static void log(String s) {
-        Minecraft.func_71410_x().field_71456_v.func_146158_b().func_146227_a(Serializer.func_150699_a("{\"text\":\"" + s + "\"}"));
+        Minecraft.getInstance().ingameGUI.getChatGUI().printChatMessage(Serializer.fromJson("{\"text\":\"" + s + "\"}"));
     }
 
     public static ITextComponent IText(String s) {
-        return Serializer.func_150699_a("{\"text\":\"" + s + "\"}");
+        return Serializer.fromJson("{\"text\":\"" + s + "\"}");
     }
 
-    public static List<IRecipe> getValid(final ItemStack sItem) {
-        final ArrayList<IRecipe> out = new ArrayList();
+    public static List<IRecipe> getValid(World world, final ItemStack sItem) {
+        final ArrayList<IRecipe> out = new ArrayList<>();
         Consumer<IRecipe> c = new Consumer<IRecipe>() {
             public void accept(IRecipe iRecipe) {
-                ItemStack is = iRecipe.func_77571_b();
-                if (sItem.func_77969_a(is)) {
+                ItemStack is = iRecipe.getRecipeOutput();
+                if (sItem.isItemEqual(is)) {
                     out.add(iRecipe);
                 }
-
             }
         };
-        CraftingManager.field_193380_a.forEach(c);
+
+        world.getRecipeManager().getRecipes().forEach(c);
+
         return out;
     }
 
     public static String itemStackToString(ItemStack temp) {
-        return temp.func_77973_b().getRegistryName().toString() + ":" + temp.func_77952_i() + " x" + temp.func_190916_E();
+        return temp.getItem().getRegistryName().toString() + ":" + temp.getDamage() + " x" + temp.getCount();
     }
 }
