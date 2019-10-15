@@ -301,18 +301,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
       return this.currentRecipeIndex;
    }
 
-
-   // removed in 1.14
-  /* @Override
-   public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-      if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-         return true;
-      }
-
-      return super.hasCapability(capability, facing);
-   }*/
-
-  //todo ??
    @Nonnull
    @Override
    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
