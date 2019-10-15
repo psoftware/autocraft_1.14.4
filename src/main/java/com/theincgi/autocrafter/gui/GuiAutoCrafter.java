@@ -116,8 +116,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    public void mouseClicked(double mouseX, double mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) throws IOException {
         double x = (double)this.width / 2 - 88;
         double y = (double)this.height / 2 - 83;
         int playerDim = Minecraft.getInstance().player.dimension.getId();
@@ -132,6 +131,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             Core.proxy.sendPacketServer(PacketClientChanged.targetChanged(this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack()));
         }
 
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
 
