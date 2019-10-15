@@ -54,10 +54,10 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         this.container = (ContainerAutoCrafter)super.getContainer();
     }
 
-    public boolean func_73868_f() {
+    @Override
+    public boolean isPauseScreen() {
         return false;
     }
-
 
     public void drawImage(ResourceLocation texture, int x, int y, int wid, int hei, float uMin, float vMin, float uMax, float vMax) {
         Minecraft.getInstance().getTextureManager().bindTexture(texture);
@@ -115,11 +115,10 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 0x404040);
     }
 
-
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        int x = this.width / 2 - 88;
-        int y = this.height / 2 - 83;
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) throws IOException {
+        double x = (double)this.width / 2 - 88;
+        double y = (double)this.height / 2 - 83;
         int playerDim = Minecraft.getInstance().player.dimension.getId();
         PacketClientChanged packet;
         if (this.prev.isInBounds(mouseX - x, mouseY - y)) {
@@ -132,6 +131,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             Core.proxy.sendPacketServer(PacketClientChanged.targetChanged(this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack()));
         }
 
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
 
@@ -164,7 +164,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             GuiAutoCrafter.this.drawImage(this.tex, this.x + dx, this.y + dy, this.wid, this.hei, this.umin, this.vmin + yOffset, this.umax, this.vmax + yOffset);
         }
 
-        public boolean isInBounds(int clickX, int clickY) {
+        public boolean isInBounds(double clickX, double clickY) {
             return clickX > this.x && clickY > this.y && clickX < this.x + this.wid && clickY < this.y + this.hei;
         }
     }
