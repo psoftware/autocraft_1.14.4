@@ -5,10 +5,8 @@
 
 package com.theincgi.autocrafter.packets;
 
-import com.theincgi.autocrafter.Recipe;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -16,16 +14,22 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketServerUpdated extends PacketTileChanged {
-    public PacketServerUpdated() {
+public class PacketServerRequestAll extends TilePacket {
+    public CompoundNBT autocrafterNbt;
+
+    private PacketServerRequestAll() {};
+
+    public PacketServerRequestAll(BlockPos p, CompoundNBT crafterNbt) {
+        super(p);
+        this.autocrafterNbt = crafterNbt;
     }
 
-    public static void encode(PacketServerUpdated pkt, PacketBuffer buf) {
+    public static void encode(PacketServerRequestAll pkt, PacketBuffer buf) {
         pkt.subEncode(buf);
     }
 
-    public static PacketServerUpdated decode(PacketBuffer buf) {
-        PacketServerUpdated packet = new PacketServerUpdated();
+    public static PacketServerRequestAll decode(PacketBuffer buf) {
+        PacketServerRequestAll packet = new PacketServerRequestAll();
         packet.subDecode(buf);
         return packet;
     }
@@ -33,18 +37,26 @@ public class PacketServerUpdated extends PacketTileChanged {
     @Override
     public void subEncode(PacketBuffer buf) {
         super.subEncode(buf);
+        buf.writeCompoundTag(this.autocrafterNbt);
     }
 
     @Override
     public void subDecode(PacketBuffer buf) {
         super.subDecode(buf);
-    }
-
-    public PacketServerUpdated(BlockPos p, CompoundNBT nbt) {
-        super(p, nbt);
+        autocrafterNbt = buf.readCompoundTag();
     }
 
     public static class Handler {
+        public static void onMessage(final PacketServerRequestAll message, Supplier<NetworkEvent.Context> ctx) {
+            ctx.get().enqueueWork(() -> {
+                TileAutoCrafter ourTile = (TileAutoCrafter)Minecraft.getInstance().player.world.getTileEntity(message.p);
+                ourTile.read(message.autocrafterNbt);
+            });
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /*public static class Handler {
         public static void onMessage(final PacketServerUpdated message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
                 TileAutoCrafter ourTile = (TileAutoCrafter)Minecraft.getInstance().player.world.getTileEntity(message.p);
@@ -71,5 +83,5 @@ public class PacketServerUpdated extends PacketTileChanged {
             });
             ctx.get().setPacketHandled(true);
         }
-    }
+    }*/
 }

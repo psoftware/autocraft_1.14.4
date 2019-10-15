@@ -7,19 +7,17 @@ package com.theincgi.autocrafter.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.theincgi.autocrafter.Core;
+import com.theincgi.autocrafter.PacketHandler;
 import com.theincgi.autocrafter.container.ContainerAutoCrafter;
-import com.theincgi.autocrafter.packets.PacketClientChanged;
+import com.theincgi.autocrafter.packets.PacketClientCrafterAction;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
-import java.io.IOException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -118,19 +116,22 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) throws IOException {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         double x = (double)this.width / 2 - 88;
         double y = (double)this.height / 2 - 83;
-        int playerDim = Minecraft.getInstance().player.dimension.getId();
-        PacketClientChanged packet;
+
         if (this.prev.isInBounds(mouseX - x, mouseY - y)) {
-            packet = PacketClientChanged.nextRecipe(this.tileAutoCrafter.getPos());
-            Core.network.sendToServer(packet);
+            PacketClientCrafterAction packet = PacketClientCrafterAction.nextRecipe(this.tileAutoCrafter.getPos());
+            PacketHandler.getChannel().sendToServer(packet);
         } else if (this.next.isInBounds(mouseX - x, mouseY - y)) {
-            packet = PacketClientChanged.prevRecipe(this.tileAutoCrafter.getPos());
-            Core.network.sendToServer(packet);
+            PacketClientCrafterAction packet = PacketClientCrafterAction.prevRecipe(this.tileAutoCrafter.getPos());
+            PacketHandler.getChannel().sendToServer(packet);
         } else if (this.container.targetSlot.equals(this.getSlotUnderMouse())) {
-            Core.proxy.sendPacketServer(PacketClientChanged.targetChanged(this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack()));
+            // TODO: Only client side. While the others don't do the same ??
+            if(Core.proxy.isClient())
+                PacketHandler.getChannel().sendToServer(PacketClientCrafterAction.targetChanged(
+                        this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack())
+                );
         }
 
         return super.mouseClicked(mouseX, mouseY, mouseButton);

@@ -1,18 +1,12 @@
 package com.theincgi.autocrafter;
 
-import com.theincgi.autocrafter.packets.PacketClientChanged;
-import com.theincgi.autocrafter.packets.PacketServerUpdated;
-import com.theincgi.autocrafter.packets.PacketTileChanged;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import com.theincgi.autocrafter.packets.PacketClientCrafterAction;
+import com.theincgi.autocrafter.packets.PacketClientRequestAll;
+import com.theincgi.autocrafter.packets.PacketServerCrafterAction;
+import com.theincgi.autocrafter.packets.PacketServerRequestAll;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
-
-import javax.annotation.Nullable;
 
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = Integer.toString(1);
@@ -26,8 +20,10 @@ public class PacketHandler {
     public static void register()
     {
         int disc = 0;
-        HANDLER.registerMessage(disc++, PacketClientChanged.class, PacketClientChanged::encode, PacketClientChanged::decode, PacketClientChanged.Handler::onMessage);
-        HANDLER.registerMessage(disc++, PacketServerUpdated.class, PacketServerUpdated::encode, PacketServerUpdated::decode, PacketServerUpdated.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketClientRequestAll.class, PacketClientRequestAll::encode, PacketClientRequestAll::decode, PacketClientRequestAll.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketServerRequestAll.class, PacketServerRequestAll::encode, PacketServerRequestAll::decode, PacketServerRequestAll.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketClientCrafterAction.class, PacketClientCrafterAction::encode, PacketClientCrafterAction::decode, PacketClientCrafterAction.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketServerCrafterAction.class, PacketServerCrafterAction::encode, PacketServerCrafterAction::decode, PacketServerCrafterAction.Handler::onMessage);
     }
 
     public static SimpleChannel getChannel() {
@@ -44,7 +40,6 @@ public class PacketHandler {
                 if (d0 * d0 + d1 * d1 + d2 * d2 < radius * radius)
                     HANDLER.sendTo(packetIn, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
             }
-        }
-     */
     }
+     */
 }

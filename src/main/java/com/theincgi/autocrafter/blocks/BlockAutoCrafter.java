@@ -1,7 +1,7 @@
 package com.theincgi.autocrafter.blocks;
 
-import com.theincgi.autocrafter.Core;
-import com.theincgi.autocrafter.packets.PacketClientChanged;
+import com.theincgi.autocrafter.PacketHandler;
+import com.theincgi.autocrafter.packets.PacketClientRequestAll;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -70,14 +70,13 @@ public class BlockAutoCrafter extends ContainerBlock implements ITileEntityProvi
       if(!world.isRemote) {
        //  player.openGui(Core.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
          TileEntity tileEntity = world.getTileEntity(pos);
-         if (tileEntity instanceof INamedContainerProvider) {
+         if (tileEntity instanceof INamedContainerProvider)
             NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
-         } else {
+         else
             throw new IllegalStateException("Our named container provider is missing!");
-         }
 
       } else {
-         Core.network.sendToServer(PacketClientChanged.requestAll(pos));
+         PacketHandler.getChannel().sendToServer(PacketClientRequestAll.requestAll(pos));
       }
 
       return true;
