@@ -17,6 +17,9 @@ import net.minecraft.network.PacketBuffer;
 
 public class ContainerAutoCrafter extends Container {
     private IInventory playerInv;
+
+
+
     private TileAutoCrafter tileAutoCrafter;
     private ItemStack lastTarget = null;
     public Slot targetSlot;
@@ -210,5 +213,10 @@ public class ContainerAutoCrafter extends Container {
 
             return null;
         }
+    }
+
+
+    public TileAutoCrafter getTileAutoCrafter() {
+        return tileAutoCrafter;
     }
 }

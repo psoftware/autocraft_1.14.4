@@ -41,7 +41,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     private static final float buttonVMax = 0.140625F;
     GuiAutoCrafter.Button prev;
     GuiAutoCrafter.Button next;
-    private IInventory playerInv;
+    private PlayerInventory playerInv;
     private TileAutoCrafter tileAutoCrafter;
     private ContainerAutoCrafter container;
 
@@ -50,8 +50,9 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         this.prev = new GuiAutoCrafter.Button(108, 17, 11, 18, 0.6901961F, 0.0F, 0.7294118F, 0.07058824F, this.background);
         this.next = new GuiAutoCrafter.Button(145, 17, 11, 18, 0.7294118F, 0.0F, 0.7764706F, 0.07058824F, this.background);
         this.playerInv = playerInv;
-       // this.tileAutoCrafter = te;
+
         this.container = (ContainerAutoCrafter)super.getContainer();
+        this.tileAutoCrafter = container.getTileAutoCrafter();
     }
 
     @Override
@@ -110,9 +111,10 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         String s = this.tileAutoCrafter.getDisplayName().getUnformattedComponentText();
+       // super.drawString(Minecraft.getInstance().fontRenderer.d,s, 88,6, 0x404040);
 
-        fontRendererObj.drawString(s, 88-fontRendererObj.getStringWidth(s)/2, 6, 0x404040);
-        this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8, 72, 0x404040);
+        Minecraft.getInstance().fontRenderer.drawString(s, 88-Minecraft.getInstance().fontRenderer.getStringWidth(s)/2, 6, 0x404040);
+        Minecraft.getInstance().fontRenderer.drawString(this.playerInv.getDisplayName().getString(), 8, 72, 0x404040);
     }
 
     @Override
