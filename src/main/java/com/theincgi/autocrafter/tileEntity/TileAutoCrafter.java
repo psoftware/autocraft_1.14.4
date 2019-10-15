@@ -38,7 +38,10 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    private ItemStack crafts;
    private String customName;
    private List recipes;
-   private ItemStackHandlerAutoCrafter ishac;
+
+   private final LazyOptional<ItemStackHandlerAutoCrafter> holder =
+           LazyOptional.of(() -> new ItemStackHandlerAutoCrafter(this));
+
    private int currentRecipeIndex;
 
 
@@ -48,7 +51,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
       this.recipe = new Recipe();
       this.crafts = ItemStack.EMPTY;
       this.currentRecipeIndex = 0;
-      this.ishac = new ItemStackHandlerAutoCrafter(this);
    }
 
    @Nonnull
@@ -314,9 +316,9 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    @Nonnull
    @Override
    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-      if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-         return (T) ishac;
-      }
+      if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+         return holder.cast();
+
       return super.getCapability(capability, facing);
    }
 
