@@ -17,7 +17,7 @@ public class GuiHandler implements IGuiHandler {
       switch(ID) {
       case 0:
          TileAutoCrafter tac = (TileAutoCrafter)world.getTileEntity(new BlockPos(x, y, z));
-         return new ContainerAutoCrafter(player.inventory, tac);
+         return new ContainerAutoCrafter(0, player.inventory, tac);
       default:
          return null;
       }
@@ -27,7 +27,7 @@ public class GuiHandler implements IGuiHandler {
       switch(ID) {
       case 0:
          TileAutoCrafter tac = (TileAutoCrafter)world.getTileEntity(new BlockPos(x, y, z));
-         return new GuiAutoCrafter(new ContainerAutoCrafter(player.inventory, tac), player.inventory, tac.getDisplayName() );
+         return new GuiAutoCrafter(new ContainerAutoCrafter(0, player.inventory, tac), player.inventory, tac.getDisplayName() );
       default:
          return null;
       }

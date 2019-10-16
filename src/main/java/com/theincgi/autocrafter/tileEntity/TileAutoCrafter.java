@@ -382,6 +382,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    @Nullable
    @Override
    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-      return new ContainerAutoCrafter(playerInventory, this);
+      return new ContainerAutoCrafter(windowId, playerInventory, this);
    }
 }

@@ -7,6 +7,7 @@ package com.theincgi.autocrafter.container;
 
 import com.theincgi.autocrafter.Core;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -18,20 +19,19 @@ import net.minecraft.network.PacketBuffer;
 public class ContainerAutoCrafter extends Container {
     private IInventory playerInv;
 
-
-
     private TileAutoCrafter tileAutoCrafter;
     private ItemStack lastTarget = null;
     public Slot targetSlot;
 
 
-    public ContainerAutoCrafter (int windowId, PlayerInventory inv, PacketBuffer extraData){
-        super(Core.containerAutoCraft,windowId);//used to initialize clint side container
-
+    // Client side
+    public ContainerAutoCrafter (int windowId, PlayerInventory playerInv, PacketBuffer extraData){
+        this(windowId, playerInv, (TileAutoCrafter)Minecraft.getInstance().world.getTileEntity(extraData.readBlockPos()));
     }
 
-    public ContainerAutoCrafter(PlayerInventory playerInv, TileAutoCrafter te) {
-        super(Core.containerAutoCraft,0);
+    // Server side
+    public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, TileAutoCrafter te) {
+        super(Core.containerAutoCraft, windowId);
         this.playerInv = playerInv;
         this.tileAutoCrafter = te;
         int slot = 0;
@@ -133,6 +133,7 @@ public class ContainerAutoCrafter extends Container {
         return previous;
     }
 
+    /*
     private ItemStack moveToCategory(ContainerAutoCrafter.Slots category, PlayerInventory inventory, ItemStack containerStack) {
         int i;
         ItemStack invStack;
@@ -167,6 +168,7 @@ public class ContainerAutoCrafter extends Container {
 
         return containerStack;
     }
+    */
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
