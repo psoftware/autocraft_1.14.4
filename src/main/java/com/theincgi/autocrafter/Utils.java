@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextComponent.Serializer;
 import net.minecraft.world.World;
@@ -32,7 +33,7 @@ public class Utils {
         Consumer<IRecipe> c = new Consumer<IRecipe>() {
             public void accept(IRecipe iRecipe) {
                 ItemStack is = iRecipe.getRecipeOutput();
-                if (sItem.isItemEqual(is)) {
+                if (sItem.isItemEqual(is) && iRecipe.getType() == IRecipeType.CRAFTING) {
                     out.add(iRecipe);
                 }
             }
