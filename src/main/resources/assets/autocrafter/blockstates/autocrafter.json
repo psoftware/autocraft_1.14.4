@@ -1,5 +1,13 @@
 {
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "all": "autocrafter:block/autocrafter"
+        },
+        "model": "autocrafter:autocrafter",
+        "uvlock": true
+    },
     "variants": {
-        "normal": { "model": "autocrafter:autocrafter" }
+        "": [{}]
     }
 }

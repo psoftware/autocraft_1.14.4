@@ -24,6 +24,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 @Mod(Core.MODID)
@@ -32,14 +34,14 @@ public class Core {
    public static final String MODID = "autocrafter";
    public static final String VERSION = "4.3";
 
+   public static Logger LOGGER = LogManager.getLogger(MODID);
+
    public static BlockAutoCrafter blockAutoCrafter;
    public static BlockItem itemAutoCrafter;
    public static TileEntityType<?> tileTypeAutoCraft;
    public static ContainerType<ContainerAutoCrafter> containerAutoCraft;
 
-   public Core() {
-      MinecraftForge.EVENT_BUS.register(BlockRegistrationHandler.class);
-   }
+   public Core() { }
 
    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
    public static class BlockRegistrationHandler {
@@ -52,7 +54,8 @@ public class Core {
       @SubscribeEvent
       public static void registerContainer(RegistryEvent.Register<ContainerType<?>> event){
          Core.containerAutoCraft =
-                 (ContainerType<ContainerAutoCrafter>) (IForgeContainerType.create(ContainerAutoCrafter::new).setRegistryName(Core.MODID));
+                 (ContainerType<ContainerAutoCrafter>) (IForgeContainerType.create(ContainerAutoCrafter::new)
+                         .setRegistryName(Core.MODID, "autocrafter"));
          event.getRegistry().register(Core.containerAutoCraft);
          ScreenManager.registerFactory(Core.containerAutoCraft, GuiAutoCrafter::new);
       }
@@ -60,15 +63,15 @@ public class Core {
       @SubscribeEvent
       public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
          Core.tileTypeAutoCraft = TileEntityType.Builder.create(TileAutoCrafter::new, Core.blockAutoCrafter).build(null)
-                 .setRegistryName(Core.MODID, "testblocktileentity");
+                 .setRegistryName(Core.MODID, "autocrafter");
          event.getRegistry().register(Core.tileTypeAutoCraft);
       }
 
       @SubscribeEvent
       public static void regBlock(RegistryEvent.Register<Block> event) {
-         System.out.println("Registering autocrafter....");
+         LOGGER.info("Registering autocrafter....");
          Core.blockAutoCrafter = new BlockAutoCrafter();
-         Core.blockAutoCrafter.setRegistryName("autocrafter");
+         Core.blockAutoCrafter.setRegistryName(Core.MODID, "autocrafter");
          event.getRegistry().register(Core.blockAutoCrafter);
       }
 
@@ -77,7 +80,7 @@ public class Core {
          Core.itemAutoCrafter = new BlockItem(Core.blockAutoCrafter, new Item.Properties().group(ItemGroup.DECORATIONS));
          // registry name always not null (if block has been correctly inserted) because
          // block registration event is fired always before item registration event (forge docs)
-         Core.itemAutoCrafter.setRegistryName(Core.blockAutoCrafter.getRegistryName());
+         Core.itemAutoCrafter.setRegistryName(Core.MODID, "autocrafter");
          event.getRegistry().register(Core.itemAutoCrafter);
       }
 
