@@ -22,7 +22,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class BlockAutoCrafter extends ContainerBlock implements ITileEntityProvider {
+public class BlockAutoCrafter extends ContainerBlock {
 
 
    public BlockAutoCrafter() {
@@ -37,10 +37,6 @@ public class BlockAutoCrafter extends ContainerBlock implements ITileEntityProvi
    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
       super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
       TileAutoCrafter tac = (TileAutoCrafter)worldIn.getTileEntity(pos);
-      if(stack.hasDisplayName()) {
-         tac.setCustomName(stack.getDisplayName().getString());
-      }
-
    }
 
    @Override
@@ -79,6 +75,11 @@ public class BlockAutoCrafter extends ContainerBlock implements ITileEntityProvi
          PacketHandler.getChannel().sendToServer(PacketClientRequestAll.requestAll(pos));
       }
 
+      return true;
+   }
+
+   @Override
+   public boolean hasTileEntity(BlockState state) {
       return true;
    }
 

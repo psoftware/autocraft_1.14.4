@@ -7,10 +7,14 @@ import com.theincgi.autocrafter.Utils;
 import java.util.List;
 
 
+import com.theincgi.autocrafter.container.ContainerAutoCrafter;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.ListNBT;
@@ -26,8 +30,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, ISidedInventory , INameable {
+public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, ISidedInventory, INamedContainerProvider {
 
    public static final int OUTPUT_SLOT = 9;
    public static final int TARGET_SLOT = 10;
@@ -36,7 +41,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    NonNullList<ItemStack> inventory;
    private Recipe recipe;
    private ItemStack crafts;
-   private String customName;
    private List recipes;
 
    private final LazyOptional<ItemStackHandlerAutoCrafter> holder =
@@ -57,9 +61,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    @Override
    public CompoundNBT write(CompoundNBT compound) {
       super.write(compound);
-      if(this.hasCustomName()) {
-         compound.putString("customName", this.customName);
-      }
 
       compound.put("inventory", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
       compound.put("recipe", this.recipe.getNBT());
@@ -70,9 +71,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    @Override
    public void read(CompoundNBT compound) {
       super.read(compound);
-      if(compound.contains("customName")) {
-         this.customName = compound.getString("customName");
-      }
 
       if(compound.contains("inventory")) {
          ItemStackHelper.loadAllItems(compound.getCompound("inventory"), this.inventory);
@@ -194,22 +192,10 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
       }
    }
 
-
-   @Nonnull
-   @Override
-   public ITextComponent getName() {
-
-      return hasCustomName()?Utils.IText(customName):Utils.IText("Auto Crafter");
-   }
-
-   @Override
-   public boolean hasCustomName() {
-      return customName!=null;
-   }
    @Nonnull
    @Override
    public ITextComponent getDisplayName() {
-      return getName();
+      return Utils.IText("Auto Crafter");
    }
 
    @Nonnull
@@ -232,11 +218,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    @Override
    public boolean canExtractItem(int index, @Nonnull ItemStack stack, @Nonnull Direction direction) {
       return index==OUTPUT_SLOT || (index<9&&!recipe.matchesRecipe(index, stack));
-   }
-
-   public void setCustomName(String displayName) {
-      this.customName = displayName;
-      this.markDirty();
    }
 
    public void setRecipe(IRecipe recipe) {
@@ -398,4 +379,9 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    }
 
 
+   @Nullable
+   @Override
+   public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+      return new ContainerAutoCrafter(playerInventory, this);
+   }
 }
