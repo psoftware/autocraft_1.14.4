@@ -20,6 +20,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockAutoCrafter extends ContainerBlock {
@@ -55,11 +56,11 @@ public class BlockAutoCrafter extends ContainerBlock {
       return true;
    }
 
-   //@Override
-  // public BlockRenderType getRenderType(BlockState state) {
-   //   return BlockRenderType.MODEL;
-  // }
-
+   @Nonnull
+   @Override
+   public BlockRenderType getRenderType(BlockState p_149645_1_) {
+      return BlockRenderType.MODEL;
+   }
 
    @Override
    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
