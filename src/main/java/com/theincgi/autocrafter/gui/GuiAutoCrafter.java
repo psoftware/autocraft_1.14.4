@@ -70,6 +70,21 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         Tessellator.getInstance().draw();
     }
 
+    private void drawRectangle(double x1, double y1, double x2, double y2, int color) {
+        double x = x1, y=y1, height=y2-y1, width = x2-x1;
+        int colorB = (color & 0xFF); color = color >> 8;
+        int colorG = (color & 0xFF); color = color >> 8;
+        int colorR = (color & 0xFF); color = color >> 8;
+        int colorA = (color & 0xFF);
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        buffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        buffer.pos(x1, y1, 0.0D).color(colorR, colorG, colorB, colorA).endVertex();
+        buffer.pos(x1, y2, 0.0D).color(colorR, colorG, colorB, colorA).endVertex();
+        buffer.pos(x2, y2, 0.0D).color(colorR, colorG, colorB, colorA).endVertex();
+        buffer.pos(x2, y1, 0.0D).color(colorR, colorG, colorB, colorA).endVertex();
+        Tessellator.getInstance().draw();
+    }
+
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         int x = this.width / 2 - 88;
@@ -94,7 +109,9 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             RenderHelper.enableGUIStandardItemLighting();
 
             //todo:
-           //  drawRect(slot.xPos+x, slot.yPos+y, slot.xPos+x+16, slot.yPos+y+16, req.isEmpty()?0xf0484848:0x708b8b8b);
+            GlStateManager.disableTexture();
+            drawRectangle(slot.xPos+x, slot.yPos+y, slot.xPos+x+16, slot.yPos+y+16, req.isEmpty()?0xf0484848:0x708b8b8b);
+            GlStateManager.enableTexture();
             GlStateManager.enableDepthTest();
         }
 
