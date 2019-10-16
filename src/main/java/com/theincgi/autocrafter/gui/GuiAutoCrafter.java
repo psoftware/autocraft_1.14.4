@@ -107,8 +107,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             GlStateManager.disableDepthTest();
 
             RenderHelper.enableGUIStandardItemLighting();
-
-            //todo:
+            
             GlStateManager.disableTexture();
             drawRectangle(slot.xPos+x, slot.yPos+y, slot.xPos+x+16, slot.yPos+y+16, req.isEmpty()?0xf0484848:0x708b8b8b);
             GlStateManager.enableTexture();
