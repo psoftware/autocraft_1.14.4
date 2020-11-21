@@ -1,6 +1,13 @@
 {
-    "parent": "block/cube_all",
+    "parent": "block/cube",
     "textures": {
-        "all": "autocrafter:block/autocrafter"
+        "original.all": "autocrafter:block/autocrafter",
+        "particle": "autocrafter:block/autocrafter_top",
+        "down": "autocrafter:block/autocrafter_bottom",
+        "up": "autocrafter:block/autocrafter_top",
+        "north": "autocrafter:block/autocrafter_side",
+        "east": "autocrafter:block/autocrafter_side",
+        "south": "autocrafter:block/autocrafter_side",
+        "west": "autocrafter:block/autocrafter_side"
     }
 }
