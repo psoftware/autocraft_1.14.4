@@ -1,25 +1,28 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "LHL",
-    "GCG",
-    "RHR"
+    "RPB",
+    "PCP",
+    "KPL"
   ],
   "key": {
     "L": {
-      "item": "minecraft:glowstone_dust"
+      "item": "minecraft:lapis_lazuli"
     },
-    "H": {
-      "item": "minecraft:hopper"
-    },
-    "G": {
-      "item": "minecraft:gold_ingot"
+    "P": {
+      "item": "minecraft:piston"
     },
     "C": {
       "item": "minecraft:crafting_table"
     },
     "R": {
-      "item": "minecraft:redstone"
+      "item": "minecraft:repeater"
+    },
+    "K": {
+      "item": "minecraft:comparator"
+    },
+    "B": {
+      "item": "minecraft:writable_book"
     }
   },
   "result": {
