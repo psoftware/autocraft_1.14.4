@@ -10,12 +10,11 @@ import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.items.ItemStackHandler;
 
 public class ContainerAutoCrafter extends Container {
     private IInventory playerInv;
@@ -32,7 +31,7 @@ public class ContainerAutoCrafter extends Container {
 
     // Server side
     public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, TileAutoCrafter te) {
-        super(AutoCrafter.containerAutoCraft, windowId);
+        super(AutoCrafter.CONTAINER_AUTOCRAFTER.get(), windowId);
         this.playerInv = playerInv;
         this.tileAutoCrafter = te;
         int slot = 0;

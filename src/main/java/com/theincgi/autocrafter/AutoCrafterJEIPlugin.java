@@ -26,7 +26,7 @@ public class AutoCrafterJEIPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         IModPlugin.super.registerRecipes(registration);
 //        registration.addIngredientInfo(new ItemStack(AutoCrafter.CRAFTER_ITEM.get()), VanillaTypes.ITEM,
-        registration.addIngredientInfo(new ItemStack(AutoCrafter.itemAutoCrafter), VanillaTypes.ITEM,
+        registration.addIngredientInfo(new ItemStack(AutoCrafter.ITEM_AUTOCRAFTER.get()), VanillaTypes.ITEM,
             I18n.format("tile.autocrafter.autocrafter.jei.1"),
             I18n.format("tile.autocrafter.autocrafter.jei.2"),
             I18n.format("tile.autocrafter.autocrafter.jei.3"),
@@ -35,8 +35,7 @@ public class AutoCrafterJEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-//        registration.addRecipeCatalyst(new ItemStack(AutoCrafter.CRAFTER_ITEM.get()), VanillaRecipeCategoryUid.CRAFTING);
-        registration.addRecipeCatalyst(new ItemStack(AutoCrafter.itemAutoCrafter), VanillaRecipeCategoryUid.CRAFTING);
+        registration.addRecipeCatalyst(new ItemStack(AutoCrafter.ITEM_AUTOCRAFTER.get()), VanillaRecipeCategoryUid.CRAFTING);
     }
 
     @Override

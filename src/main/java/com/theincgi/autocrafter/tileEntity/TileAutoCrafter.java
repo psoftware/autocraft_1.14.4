@@ -3,10 +3,6 @@ package com.theincgi.autocrafter.tileEntity;
 import com.theincgi.autocrafter.AutoCrafter;
 import com.theincgi.autocrafter.Recipe;
 import com.theincgi.autocrafter.Utils;
-
-import java.util.List;
-
-
 import com.theincgi.autocrafter.container.ContainerAutoCrafter;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +14,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -31,6 +27,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, ISidedInventory, INamedContainerProvider {
 
@@ -50,7 +47,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
 
     public TileAutoCrafter() {
-        super(AutoCrafter.tileTypeAutoCraft);
+        super(AutoCrafter.TILE_AUTOCRAFTER.get());
         this.inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
         this.recipe = new Recipe();
         this.crafts = ItemStack.EMPTY;

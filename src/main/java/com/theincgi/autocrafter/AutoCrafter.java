@@ -2,79 +2,61 @@ package com.theincgi.autocrafter;
 
 import com.theincgi.autocrafter.blocks.BlockAutoCrafter;
 import com.theincgi.autocrafter.container.ContainerAutoCrafter;
-import com.theincgi.autocrafter.gui.GuiAutoCrafter;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 
 @Mod(AutoCrafter.MODID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class AutoCrafter {
     public static final String MODID = "autocrafter";
-    public static final String VERSION = "4.3";
+    public static final String VERSION = "5";
+    public static final String REGISTRY_NAME = "autocrafter";
 
-    public static Logger LOGGER = LogManager.getLogger(MODID);
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, MODID);
+    private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
 
-    public static BlockAutoCrafter blockAutoCrafter;
-    public static BlockItem itemAutoCrafter;
-    public static TileEntityType<?> tileTypeAutoCraft;
-    public static ContainerType<ContainerAutoCrafter> containerAutoCraft;
+    public static final RegistryObject<BlockAutoCrafter> BLOCK_AUTOCRAFTER = BLOCKS.register(REGISTRY_NAME,
+        BlockAutoCrafter::new
+    );
+
+    public static final RegistryObject<Item> ITEM_AUTOCRAFTER = ITEMS.register(REGISTRY_NAME,
+        () -> new BlockItem(BLOCK_AUTOCRAFTER.get(), new Item.Properties().group(ItemGroup.REDSTONE))
+    );
+
+    public static final RegistryObject<TileEntityType<TileAutoCrafter>> TILE_AUTOCRAFTER = TILES.register(REGISTRY_NAME,
+        () -> TileEntityType.Builder.create(
+            TileAutoCrafter::new, BLOCK_AUTOCRAFTER.get()
+        ).build(null)
+    );
+
+    public static final RegistryObject<ContainerType<ContainerAutoCrafter>> CONTAINER_AUTOCRAFTER = CONTAINERS.register(REGISTRY_NAME,
+        () -> IForgeContainerType.create(ContainerAutoCrafter::new)
+    );
 
     public AutoCrafter() {
-    }
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        BLOCKS.register(modEventBus);
+        ITEMS.register(modEventBus);
+        TILES.register(modEventBus);
+        CONTAINERS.register(modEventBus);
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class BlockRegistrationHandler {
-        @SubscribeEvent
-        public static void registerContainer(RegistryEvent.Register<ContainerType<?>> event) {
-            AutoCrafter.containerAutoCraft = (ContainerType<ContainerAutoCrafter>) (
-                IForgeContainerType.create(ContainerAutoCrafter::new).setRegistryName(MODID, MODID)
-            );
-            event.getRegistry().register(AutoCrafter.containerAutoCraft);
-            ScreenManager.registerFactory(AutoCrafter.containerAutoCraft, GuiAutoCrafter::new);
-        }
-
-        @SubscribeEvent
-        public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
-            AutoCrafter.tileTypeAutoCraft = TileEntityType.Builder
-                .create(TileAutoCrafter::new, AutoCrafter.blockAutoCrafter)
-                .build(null)
-                .setRegistryName(MODID, MODID);
-            event.getRegistry().register(AutoCrafter.tileTypeAutoCraft);
-        }
-
-        @SubscribeEvent
-        public static void regBlock(RegistryEvent.Register<Block> event) {
-            LOGGER.info("Registering autocrafter....");
-            AutoCrafter.blockAutoCrafter = new BlockAutoCrafter();
-            AutoCrafter.blockAutoCrafter.setRegistryName(MODID, MODID);
-            event.getRegistry().register(AutoCrafter.blockAutoCrafter);
-        }
-
-        @SubscribeEvent
-        public static void regItems(RegistryEvent.Register<Item> event) {
-            AutoCrafter.itemAutoCrafter = new BlockItem(AutoCrafter.blockAutoCrafter, new Item.Properties().group(ItemGroup.DECORATIONS));
-            AutoCrafter.itemAutoCrafter.setRegistryName(MODID, MODID);
-            event.getRegistry().register(AutoCrafter.itemAutoCrafter);
-        }
-
-        @SubscribeEvent
-        public static void commonSetup(FMLCommonSetupEvent event) {
-            //proxy.commonSetup();
-            PacketHandler.register();
-        }
+        modEventBus.addListener(ClientSetup::init);
+        PacketHandler.register();
     }
 }
