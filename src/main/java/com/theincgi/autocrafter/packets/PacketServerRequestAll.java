@@ -19,7 +19,10 @@ import java.util.function.Supplier;
 public class PacketServerRequestAll extends TilePacket {
     public CompoundNBT autocrafterNbt;
 
-    private PacketServerRequestAll() {};
+    private PacketServerRequestAll() {
+    }
+
+    ;
 
     public PacketServerRequestAll(BlockPos p, CompoundNBT crafterNbt) {
         super(p);
@@ -53,7 +56,7 @@ public class PacketServerRequestAll extends TilePacket {
             ctx.get().enqueueWork(() -> {
                 World w = Minecraft.getInstance().player.world;
                 BlockState b = w.getBlockState(message.p);
-                TileAutoCrafter ourTile = (TileAutoCrafter)w.getTileEntity(message.p);
+                TileAutoCrafter ourTile = (TileAutoCrafter) w.getTileEntity(message.p);
                 ourTile.read(b, message.autocrafterNbt);
             });
             ctx.get().setPacketHandled(true);

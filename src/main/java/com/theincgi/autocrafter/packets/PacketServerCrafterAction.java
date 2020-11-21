@@ -58,8 +58,9 @@ public class PacketServerCrafterAction extends TilePacket {
                 TileAutoCrafter ourTile = (TileAutoCrafter) Minecraft.getInstance().player.world.getTileEntity(message.p);
 
                 ItemStack newTarget = message.targetSlot;
-                if (!Recipe.matches(ourTile.getCrafts(), newTarget))
+                if (!Recipe.itemStacksMatch(ourTile.getCrafts(), newTarget)) {
                     ourTile.setCrafts(newTarget);
+                }
 
                 ourTile.setRecipe(message.recipeNBT.getList("recipe", 10));
                 ourTile.setCurrentRecipeIndex(message.recipeIndex);
