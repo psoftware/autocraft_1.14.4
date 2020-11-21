@@ -3,9 +3,6 @@ package com.theincgi.autocrafter;
 import com.theincgi.autocrafter.blocks.BlockAutoCrafter;
 import com.theincgi.autocrafter.container.ContainerAutoCrafter;
 import com.theincgi.autocrafter.gui.GuiAutoCrafter;
-import com.theincgi.autocrafter.proxy.ClientProxy;
-import com.theincgi.autocrafter.proxy.CommonProxy;
-import com.theincgi.autocrafter.proxy.ServerProxy;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.ScreenManager;
@@ -14,16 +11,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 @Mod(AutoCrafter.MODID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class AutoCrafter {
-    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
     public static final String MODID = "autocrafter";
     public static final String VERSION = "4.3";
 
