@@ -5,7 +5,7 @@
 
 package com.theincgi.autocrafter.container;
 
-import com.theincgi.autocrafter.Core;
+import com.theincgi.autocrafter.AutoCrafter;
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +31,7 @@ public class ContainerAutoCrafter extends Container {
 
     // Server side
     public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, TileAutoCrafter te) {
-        super(Core.containerAutoCraft, windowId);
+        super(AutoCrafter.containerAutoCraft, windowId);
         this.playerInv = playerInv;
         this.tileAutoCrafter = te;
         int slot = 0;

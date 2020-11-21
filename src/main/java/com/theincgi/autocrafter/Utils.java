@@ -14,6 +14,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextComponent.Serializer;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 public class Utils {
@@ -21,11 +22,11 @@ public class Utils {
     }
 
     public static void log(String s) {
-        Minecraft.getInstance().ingameGUI.getChatGUI().printChatMessage(Serializer.fromJson("{\"text\":\"" + s + "\"}"));
+        Minecraft.getInstance().ingameGUI.getChatGUI().printChatMessage(new StringTextComponent(s));
     }
 
     public static ITextComponent IText(String s) {
-        return Serializer.fromJson("{\"text\":\"" + s + "\"}");
+        return new StringTextComponent(s);
     }
 
     public static List<IRecipe> getValid(World world, final ItemStack sItem) {

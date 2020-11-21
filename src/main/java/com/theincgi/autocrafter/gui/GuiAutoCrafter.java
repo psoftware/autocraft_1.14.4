@@ -5,8 +5,9 @@
 
 package com.theincgi.autocrafter.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.theincgi.autocrafter.Core;
+import com.theincgi.autocrafter.AutoCrafter;
 import com.theincgi.autocrafter.PacketHandler;
 import com.theincgi.autocrafter.container.ContainerAutoCrafter;
 import com.theincgi.autocrafter.packets.PacketClientCrafterAction;
@@ -63,10 +64,10 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         GlStateManager.enableAlphaTest();
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos((double)x, (double)y, 0.0D).tex((double)uMin, (double)vMin).endVertex();
-        buffer.pos((double)x, (double)(y + hei), 0.0D).tex((double)uMin, (double)vMax).endVertex();
-        buffer.pos((double)(x + wid), (double)(y + hei), 0.0D).tex((double)uMax, (double)vMax).endVertex();
-        buffer.pos((double)(x + wid), (double)y, 0.0D).tex((double)uMax, (double)vMin).endVertex();
+        buffer.pos((double)x, (double)y, 0.0D).tex(uMin, vMin).endVertex();
+        buffer.pos((double)x, (double)(y + hei), 0.0D).tex(uMin, vMax).endVertex();
+        buffer.pos((double)(x + wid), (double)(y + hei), 0.0D).tex(uMax, vMax).endVertex();
+        buffer.pos((double)(x + wid), (double)y, 0.0D).tex(uMax, vMin).endVertex();
         Tessellator.getInstance().draw();
     }
 
@@ -86,7 +87,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         int x = this.width / 2 - 88;
         int y = this.height / 2 - 83;
         Minecraft.getInstance().getTextureManager().bindTexture(this.background);
@@ -100,14 +101,14 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             ItemStack req = this.tileAutoCrafter.getRecipe().getDisplayItem(i);
 
             RenderHelper.disableStandardItemLighting();
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderHelper.enableStandardItemLighting();
             this.itemRenderer.renderItemAndEffectIntoGUI(req, slot.xPos + x, slot.yPos + y);
             GlStateManager.enableAlphaTest();
             GlStateManager.enableBlend();
             GlStateManager.disableDepthTest();
 
-            RenderHelper.enableGUIStandardItemLighting();
-            
+            RenderHelper.enableStandardItemLighting();
+
             GlStateManager.disableTexture();
             drawRectangle(slot.xPos+x, slot.yPos+y, slot.xPos+x+16, slot.yPos+y+16, req.isEmpty()?0xf0484848:0x708b8b8b);
             GlStateManager.enableTexture();
@@ -123,12 +124,12 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
         String s = this.tileAutoCrafter.getDisplayName().getUnformattedComponentText();
        // super.drawString(Minecraft.getInstance().fontRenderer.d,s, 88,6, 0x404040);
 
-        Minecraft.getInstance().fontRenderer.drawString(s, 88-Minecraft.getInstance().fontRenderer.getStringWidth(s)/2, 6, 0x404040);
-        Minecraft.getInstance().fontRenderer.drawString(this.playerInv.getDisplayName().getString(), 8, 72, 0x404040);
+        Minecraft.getInstance().fontRenderer.drawString(matrixStack, s, 88-Minecraft.getInstance().fontRenderer.getStringWidth(s)/2, 6, 0x404040);
+        Minecraft.getInstance().fontRenderer.drawString(matrixStack, this.playerInv.getDisplayName().getString(), 8, 72, 0x404040);
     }
 
     @Override
@@ -144,7 +145,7 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             PacketHandler.getChannel().sendToServer(packet);
         } else if (this.container.targetSlot.equals(this.getSlotUnderMouse())) {
             // TODO: Only client side. While the others don't do the same ??
-            if(Core.proxy.isClient())
+            if(AutoCrafter.proxy.isClient())
                 PacketHandler.getChannel().sendToServer(PacketClientCrafterAction.targetChanged(
                         this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack())
                 );

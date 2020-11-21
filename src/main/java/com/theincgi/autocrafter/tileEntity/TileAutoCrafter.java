@@ -1,6 +1,6 @@
 package com.theincgi.autocrafter.tileEntity;
 
-import com.theincgi.autocrafter.Core;
+import com.theincgi.autocrafter.AutoCrafter;
 import com.theincgi.autocrafter.Recipe;
 import com.theincgi.autocrafter.Utils;
 
@@ -8,6 +8,7 @@ import java.util.List;
 
 
 import com.theincgi.autocrafter.container.ContainerAutoCrafter;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -22,7 +23,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -50,7 +50,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
 
    public TileAutoCrafter() {
-      super(Core.tileTypeAutoCraft);
+      super(AutoCrafter.tileTypeAutoCraft);
       this.inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
       this.recipe = new Recipe();
       this.crafts = ItemStack.EMPTY;
@@ -69,8 +69,8 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
    }
 
    @Override
-   public void read(CompoundNBT compound) {
-      super.read(compound);
+   public void read(BlockState state, CompoundNBT compound) {
+      super.read(state, compound);
 
       if(compound.contains("inventory")) {
          ItemStackHelper.loadAllItems(compound.getCompound("inventory"), this.inventory);

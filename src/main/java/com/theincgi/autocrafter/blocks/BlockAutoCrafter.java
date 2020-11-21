@@ -12,6 +12,8 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +29,7 @@ public class BlockAutoCrafter extends ContainerBlock {
 
 
    public BlockAutoCrafter() {
-      super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f,10).lightValue(1));
+      super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f,10));
 
       //TODO: set creative tab (where??)
       //this.func_149647_a(CreativeTabs.field_78028_d);
@@ -63,7 +65,7 @@ public class BlockAutoCrafter extends ContainerBlock {
    }
 
    @Override
-   public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+   public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
       if(!world.isRemote) {
        //  player.openGui(Core.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
          TileEntity tileEntity = world.getTileEntity(pos);
@@ -76,7 +78,7 @@ public class BlockAutoCrafter extends ContainerBlock {
          PacketHandler.getChannel().sendToServer(PacketClientRequestAll.requestAll(pos));
       }
 
-      return true;
+      return ActionResultType.SUCCESS;
    }
 
    @Override

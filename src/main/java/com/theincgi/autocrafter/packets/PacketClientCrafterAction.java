@@ -79,7 +79,7 @@ public class PacketClientCrafterAction extends TilePacket {
                     // Send message to players in tile entity radius
                     PacketDistributor.PacketTarget ptarget = PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
                             message.p.getX(), message.p.getY(), message.p.getZ(), 8.0D,
-                            ctx.get().getSender().getEntityWorld().dimension.getType())
+                            ctx.get().getSender().getEntityWorld().getDimensionKey())
                     );
                     PacketHandler.getChannel().send(ptarget,
                             new PacketServerCrafterAction(message.p, tac.getCrafts(), tac.getRecipe(), tac.getCurrentRecipeIndex()));

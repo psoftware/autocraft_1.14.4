@@ -6,10 +6,12 @@
 package com.theincgi.autocrafter.packets;
 
 import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -49,8 +51,10 @@ public class PacketServerRequestAll extends TilePacket {
     public static class Handler {
         public static void onMessage(final PacketServerRequestAll message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
-                TileAutoCrafter ourTile = (TileAutoCrafter)Minecraft.getInstance().player.world.getTileEntity(message.p);
-                ourTile.read(message.autocrafterNbt);
+                World w = Minecraft.getInstance().player.world;
+                BlockState b = w.getBlockState(message.p);
+                TileAutoCrafter ourTile = (TileAutoCrafter)w.getTileEntity(message.p);
+                ourTile.read(b, message.autocrafterNbt);
             });
             ctx.get().setPacketHandled(true);
         }
