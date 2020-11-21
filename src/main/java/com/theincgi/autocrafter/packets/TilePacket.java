@@ -16,14 +16,12 @@ public abstract class TilePacket {
    // p -> buff
    public void subEncode(PacketBuffer buf)
    {
-      buf.writeInt(this.p.getX());
-      buf.writeInt(this.p.getY());
-      buf.writeInt(this.p.getZ());
+      buf.writeBlockPos(this.p);
    }
 
    // buff -> p
    public void subDecode(PacketBuffer buf)
    {
-      this.p = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+      this.p = buf.readBlockPos();
    }
 }
