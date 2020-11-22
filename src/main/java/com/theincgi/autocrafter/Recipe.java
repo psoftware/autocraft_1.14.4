@@ -79,17 +79,14 @@ public class Recipe {
         }
     }
 
-    public boolean matchesRecipe(int slot, ItemStack itemStack) {
+    public boolean stackForSlotFitsThisRecipe(int slot, ItemStack itemStack) {
         Recipe.ItemOptions opt = this.items.get(slot);
-        if (opt.possibleOptions.size() == 0 && itemStack.isEmpty()) {
-            return true;
-        } else {
-            for (ItemStack i : opt.possibleOptions) {
-                if (itemStacksMatch(i, itemStack))
-                    return true;
-            }
-            return false;
+        if (opt.possibleOptions.size() == 0 && itemStack.isEmpty()) return true;
+
+        for (ItemStack i : opt.possibleOptions) {
+            if (itemStacksMatch(i, itemStack)) return true;
         }
+        return false;
     }
 
     public ListNBT serializeNBT() {
@@ -153,7 +150,7 @@ public class Recipe {
     public static boolean itemStacksMatch(ItemStack crafts, ItemStack stack) {
         if (crafts.isEmpty() && stack.isEmpty()) return true;
         if (!crafts.getItem().equals(stack.getItem())) return false;
-        if (crafts.getDamage() != 32767 && stack.getDamage() != 32767) return crafts.getDamage() == stack.getDamage();
+//        if (crafts.getDamage() != 32767 && stack.getDamage() != 32767) return crafts.getDamage() == stack.getDamage();
         return true;
     }
 

@@ -53,7 +53,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
         this.currentRecipeIndex = 0;
     }
 
-    public ItemStack getRecipeResult(){
+    public ItemStack getRecipeResult() {
         return recipe.getOutput();
     }
 
@@ -199,7 +199,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
     }
 
     public boolean isSlotAllowed(int index, ItemStack itemStack) {
-        return index < 9 && this.recipe.matchesRecipe(index, itemStack);
+        return index < 9 && this.recipe.stackForSlotFitsThisRecipe(index, itemStack);
     }
 
     @Override
@@ -210,7 +210,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
     @Override
     public boolean canExtractItem(int index, @Nonnull ItemStack stack, @Nonnull Direction direction) {
-        return index == OUTPUT_SLOT || (index < 9 && !recipe.matchesRecipe(index, stack));
+        return index == OUTPUT_SLOT || (index < 9 && !recipe.stackForSlotFitsThisRecipe(index, stack));
     }
 
     public void setRecipe(IRecipe recipe) {
@@ -285,9 +285,19 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
         return super.getCapability(capability, facing);
     }
 
-    int ticker = 0;
-    final int tickrateDivider = 2;
 
+    public boolean gridFitsRecipe(){
+        for (int slot = 0; slot < 9; ++slot) {
+            if (!this.recipe.stackForSlotFitsThisRecipe(slot, inventory.get(slot))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    int ticker = 0;
+    final int tickrateDivider = 5;
     @Override
     public void tick() {
         ticker++;
@@ -298,55 +308,48 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
         int amountOfItemsInOutputSlot = getStackInSlot(OUTPUT_SLOT).getCount();
         int numberOfItemsPerCraft = this.recipe.getOutput().getCount();
-        if (amountOfItemsInOutputSlot + numberOfItemsPerCraft <= this.recipe.getOutput().getMaxStackSize()) {
-            if (Recipe.itemStacksMatch(getStackInSlot(OUTPUT_SLOT), this.recipe.getOutput()) || getStackInSlot(OUTPUT_SLOT).isEmpty()) {
+        if (amountOfItemsInOutputSlot + numberOfItemsPerCraft > this.recipe.getOutput().getMaxStackSize()) return;
+        if (!getStackInSlot(OUTPUT_SLOT).isEmpty() && !Recipe.itemStacksMatch(getStackInSlot(OUTPUT_SLOT), this.recipe.getOutput())) return;
 
-                this.distributeItems();
+        this.distributeItems();
 
-                for (int leftovers = 0; leftovers < 9; ++leftovers) {
-                    if (!this.recipe.matchesRecipe(leftovers, this.inventory.get(leftovers))) {
-                        return;
-                    }
-                }
+        if (!gridFitsRecipe()) return;
 
-                NonNullList<ItemStack> leftovers = this.recipe.getLeftovers(this.inventory, 0, 9);
+        NonNullList<ItemStack> leftovers = this.recipe.getLeftovers(this.inventory, 0, 9);
 
-                for (int i = 0; i < 9; ++i) {
-                    (this.inventory.get(i)).shrink(1);
-                    if ((this.inventory.get(i)).getCount() <= 0) {
-                        this.setInventorySlotContents(i, ItemStack.EMPTY);
-                    }
+        for (int i = 0; i < 9; ++i) {
+            (this.inventory.get(i)).shrink(1);
+            if ((this.inventory.get(i)).getCount() <= 0) {
+                this.setInventorySlotContents(i, ItemStack.EMPTY);
+            }
 
-                    if (!(leftovers.get(i)).isEmpty()) {
-                        if ((this.inventory.get(i)).isEmpty()) {
-                            this.setInventorySlotContents(i, leftovers.get(i));
-                        } else {
-                            InventoryHelper.spawnItemStack(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), leftovers.get(i));
-                        }
-                    }
-                }
-
-                if (getStackInSlot(OUTPUT_SLOT).isEmpty()) {
-                    setInventorySlotContents(OUTPUT_SLOT, this.recipe.getOutput());
+            if (!(leftovers.get(i)).isEmpty()) {
+                if ((this.inventory.get(i)).isEmpty()) {
+                    this.setInventorySlotContents(i, leftovers.get(i));
                 } else {
-                    getStackInSlot(OUTPUT_SLOT).grow(this.recipe.getOutput().getCount());
+                    InventoryHelper.spawnItemStack(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), leftovers.get(i));
                 }
-
-                this.markDirty();
             }
         }
+
+        if (getStackInSlot(OUTPUT_SLOT).isEmpty()) {
+            setInventorySlotContents(OUTPUT_SLOT, this.recipe.getOutput());
+        } else {
+            getStackInSlot(OUTPUT_SLOT).grow(this.recipe.getOutput().getCount());
+        }
+
+        this.markDirty();
+
     }
 
     private void distributeItems() {
         for (int i = 0; i < 9; ++i) {
             ItemStack current = getStackInSlot(i);
-            if (!current.isEmpty()) {
+            if (!current.isEmpty() && current.getCount() >= 2) {
                 int nextMatch = this.nextMatch(i);
                 if (nextMatch >= 0) {
                     if (getStackInSlot(nextMatch).isEmpty()) {
-                        if (current.getCount() >= 2) {
-                            setInventorySlotContents(nextMatch, current.split(1));
-                        }
+                        setInventorySlotContents(nextMatch, current.split(1));
                     } else if (current.getCount() > getStackInSlot(nextMatch).getCount()) {
                         current.shrink(1);
                         getStackInSlot(nextMatch).grow(1);
@@ -361,7 +364,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
         for (int i = 0; i < 9; ++i) {
             int c = (i + j + 1) % 9;
-            if (Recipe.itemStacksMatch(is, getStackInSlot(c)) || getStackInSlot(c).isEmpty() && this.recipe.matchesRecipe(c, is)) {
+            if (Recipe.itemStacksMatch(is, getStackInSlot(c)) || getStackInSlot(c).isEmpty() && this.recipe.stackForSlotFitsThisRecipe(c, is)) {
                 return c == j ? -1 : c;
             }
         }

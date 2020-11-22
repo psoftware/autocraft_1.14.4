@@ -64,7 +64,7 @@ public class ItemStackHandlerAutoCrafter implements IItemHandler {
     }
 
     public int getSpaceFor(int indx, ItemStack s) {
-        if (this.tac.getRecipe().matchesRecipe(indx, s)) {
+        if (this.tac.getRecipe().stackForSlotFitsThisRecipe(indx, s)) {
             if (Recipe.itemStacksMatch(s, this.getStackInSlot(indx))) {
                 return s.getMaxStackSize() - this.getStackInSlot(indx).getCount();
             }
