@@ -286,15 +286,15 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
     }
 
     int ticker = 0;
-    final int tickrate = 2;
+    final int tickrateDivider = 2;
 
     @Override
     public void tick() {
         ticker++;
-        if (ticker % tickrate != 0) return;
+        if (ticker % tickrateDivider != 0) return;
         if (this.world == null) return;
-        if (this.world.isBlockPowered(pos) /* && world.isBlockIndirectlyGettingPowered(pos)<= 0*/) return;
         if (this.recipe.getOutput().isEmpty()) return;
+//        if (this.world.isBlockPowered(pos) /* && world.isBlockIndirectlyGettingPowered(pos)<= 0*/) return;
 
         int amountOfItemsInOutputSlot = getStackInSlot(OUTPUT_SLOT).getCount();
         int numberOfItemsPerCraft = this.recipe.getOutput().getCount();
