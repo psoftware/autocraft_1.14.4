@@ -1,8 +1,8 @@
 package com.theincgi.autocrafter;
 
 import com.theincgi.autocrafter.blocks.BlockAutoCrafter;
-import com.theincgi.autocrafter.container.ContainerAutoCrafter;
-import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import com.theincgi.autocrafter.containers.ContainerAutoCrafter;
+import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;

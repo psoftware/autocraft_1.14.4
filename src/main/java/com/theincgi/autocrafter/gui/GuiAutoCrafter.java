@@ -7,11 +7,10 @@ package com.theincgi.autocrafter.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.theincgi.autocrafter.AutoCrafter;
 import com.theincgi.autocrafter.PacketHandler;
-import com.theincgi.autocrafter.container.ContainerAutoCrafter;
+import com.theincgi.autocrafter.containers.ContainerAutoCrafter;
 import com.theincgi.autocrafter.packets.PacketClientCrafterAction;
-import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,10 +21,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {

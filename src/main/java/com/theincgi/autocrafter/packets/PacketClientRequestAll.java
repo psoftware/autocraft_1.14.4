@@ -1,7 +1,7 @@
 package com.theincgi.autocrafter.packets;
 
 import com.theincgi.autocrafter.PacketHandler;
-import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -42,6 +42,7 @@ public class PacketClientRequestAll extends TilePacket {
     public static class Handler {
         public static void onMessage(final PacketClientRequestAll message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
+                // handled by server
                 TileAutoCrafter tac = (TileAutoCrafter)ctx.get().getSender().getServerWorld().getTileEntity(message.p);
 
                 // Send message to players in tile entity radius

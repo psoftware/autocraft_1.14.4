@@ -1,9 +1,9 @@
-package com.theincgi.autocrafter.tileEntity;
+package com.theincgi.autocrafter.tiles;
 
 import com.theincgi.autocrafter.AutoCrafter;
 import com.theincgi.autocrafter.Recipe;
 import com.theincgi.autocrafter.Utils;
-import com.theincgi.autocrafter.container.ContainerAutoCrafter;
+import com.theincgi.autocrafter.containers.ContainerAutoCrafter;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -45,7 +45,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
     private int currentRecipeIndex;
 
-
     public TileAutoCrafter() {
         super(AutoCrafter.TILE_AUTOCRAFTER.get());
         this.inventory = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
@@ -54,13 +53,16 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
         this.currentRecipeIndex = 0;
     }
 
+    public ItemStack getRecipeResult(){
+        return recipe.getOutput();
+    }
+
     @Nonnull
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);
-
         compound.put("inventory", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
-        compound.put("recipe", this.recipe.getNBT());
+        compound.put("recipe", this.recipe.serializeNBT());
         compound.put("crafts", this.crafts.serializeNBT());
         return compound;
     }
@@ -74,13 +76,12 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
         }
 
         if (compound.contains("recipe")) {
-            this.recipe = Recipe.fromNBT(compound.getList("recipe", 10));
+            this.recipe = Recipe.read(compound.getList("recipe", 10));
         }
 
         if (compound.contains("crafts")) {
             this.crafts = ItemStack.read(compound.getCompound("crafts"));
         }
-
     }
 
     @Override
@@ -112,7 +113,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
         if (this.getStackInSlot(index).getCount() == 0) {
             this.setInventorySlotContents(index, ItemStack.EMPTY);
         }
-
         return s;
     }
 
@@ -130,12 +130,10 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
     @Override
     public void setInventorySlotContents(int index, @Nonnull ItemStack stack) {
-        ItemStack itemstack = this.inventory.get(index);
         this.inventory.set(index, stack);
         if (stack.getCount() > this.getInventoryStackLimit()) {
             stack.setCount(this.getInventoryStackLimit());
         }
-
         this.markDirty();
     }
 
@@ -146,9 +144,7 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
     @Override
     public boolean isUsableByPlayer(@Nonnull PlayerEntity player) {
-        assert world != null;
-        return world.getTileEntity(getPos()) == this &&
-            player.getDistanceSq(.5, .5, .5) <= 64;
+        return true;
     }
 
     @Override
@@ -162,7 +158,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         return true;
-
     }
 
     //removed in 1.14
@@ -183,7 +178,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
 
     @Override
     public void clear() {
-
         for (int i = 0; i < inventory.size(); i++) {
             inventory.set(i, ItemStack.EMPTY);
         }
@@ -225,7 +219,8 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
     }
 
     public void setRecipe(ListNBT recipeTag) {
-        this.recipe = Recipe.fromNBT(recipeTag);
+        this.recipe = Recipe.read(recipeTag);
+        this.markDirty();
     }
 
     public void updateRecipes(ItemStack crafts, int index) {
@@ -359,7 +354,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
                 }
             }
         }
-
     }
 
     private int nextMatch(int j) {
@@ -382,7 +376,6 @@ public class TileAutoCrafter extends TileEntity implements ITickableTileEntity, 
     public void setCrafts(ItemStack itemStack) {
         this.crafts = itemStack;
     }
-
 
     @Nullable
     @Override

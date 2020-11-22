@@ -1,4 +1,4 @@
-package com.theincgi.autocrafter.tileEntity;
+package com.theincgi.autocrafter.tiles;
 
 import com.theincgi.autocrafter.Recipe;
 import net.minecraft.item.ItemStack;

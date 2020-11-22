@@ -3,26 +3,22 @@
 // (powered by Fernflower decompiler)
 //
 
-package com.theincgi.autocrafter.container;
+package com.theincgi.autocrafter.containers;
 
 import com.theincgi.autocrafter.AutoCrafter;
-import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
 public class ContainerAutoCrafter extends Container {
-    private IInventory playerInv;
-
     private TileAutoCrafter tileAutoCrafter;
     private ItemStack lastTarget = null;
     public Slot targetSlot;
-
 
     // Client side
     public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, PacketBuffer extraData) {
@@ -32,7 +28,6 @@ public class ContainerAutoCrafter extends Container {
     // Server side
     public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, TileAutoCrafter te) {
         super(AutoCrafter.CONTAINER_AUTOCRAFTER.get(), windowId);
-        this.playerInv = playerInv;
         this.tileAutoCrafter = te;
         int slot = 0;
 
@@ -55,6 +50,7 @@ public class ContainerAutoCrafter extends Container {
                 return false;
             }
         });
+
         this.addSlot(this.targetSlot = new Slot(this.tileAutoCrafter, slot++, 124, 18) {
             public int getItemStackLimit(ItemStack stack) {
                 return 0;

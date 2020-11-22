@@ -1,7 +1,7 @@
 package com.theincgi.autocrafter;
 
 
-import com.theincgi.autocrafter.container.ContainerAutoCrafter;
+import com.theincgi.autocrafter.containers.ContainerAutoCrafter;
 import com.theincgi.autocrafter.gui.GuiAutoCrafter;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;

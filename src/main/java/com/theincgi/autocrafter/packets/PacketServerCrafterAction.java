@@ -1,7 +1,7 @@
 package com.theincgi.autocrafter.packets;
 
 import com.theincgi.autocrafter.Recipe;
-import com.theincgi.autocrafter.tileEntity.TileAutoCrafter;
+import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -22,7 +22,7 @@ public class PacketServerCrafterAction extends TilePacket {
         super(p);
         this.targetSlot = targetSlot;
         this.recipeNBT = new CompoundNBT();
-        recipeNBT.put("recipe", recipe.getNBT());
+        recipeNBT.put("recipe", recipe.serializeNBT());
         this.recipeIndex = recipeIndex;
     }
 
@@ -55,6 +55,7 @@ public class PacketServerCrafterAction extends TilePacket {
     public static class Handler {
         public static void onMessage(final PacketServerCrafterAction message, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> {
+                // handled on client side
                 TileAutoCrafter ourTile = (TileAutoCrafter) Minecraft.getInstance().player.world.getTileEntity(message.p);
 
                 ItemStack newTarget = message.targetSlot;

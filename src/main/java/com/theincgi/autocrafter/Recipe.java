@@ -5,9 +5,6 @@
 
 package com.theincgi.autocrafter;
 
-import java.util.*;
-
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -18,6 +15,11 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.CompoundIngredient;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
 public class Recipe {
@@ -90,7 +92,7 @@ public class Recipe {
         }
     }
 
-    public ListNBT getNBT() {
+    public ListNBT serializeNBT() {
         ListNBT listNBT = new ListNBT();
         listNBT.add(this.getOutput().serializeNBT());
 
@@ -103,7 +105,7 @@ public class Recipe {
         return listNBT;
     }
 
-    public static Recipe fromNBT(ListNBT tags) {
+    public static Recipe read(ListNBT tags) {
         Recipe recipe = new Recipe();
         recipe.output = ItemStack.read(tags.getCompound(0));
 
