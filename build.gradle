@@ -29,7 +29,7 @@ apply plugin: 'maven-publish'
 
 version = '5'
 group = 'com.theincgi.autocrafter' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "autocrafter-${version}-1.16"
+archivesBaseName = "autocrafter-1.16"
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
