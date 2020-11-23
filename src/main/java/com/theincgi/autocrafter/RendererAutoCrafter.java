@@ -14,28 +14,28 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class RendererAutoCrafter extends TileEntityRenderer<TileAutoCrafter> {
-    public RendererAutoCrafter(TileEntityRendererDispatcher tileEntityRendererDispatcher) {
+    public RendererAutoCrafter(TileEntityRendererDispatcher tileEntityRendererDispatcher)
+    {
         super(tileEntityRendererDispatcher);
     }
 
-    ItemStack previousItemStack = ItemStack.EMPTY;
-    public void render(TileAutoCrafter tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+    public void render(TileAutoCrafter tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
+    {
         ItemStack itemStack = tileEntity.getRecipeResult();
-        String s = "itemstack: " + itemStack.toString();
-        if (!itemStack.isItemEqual(previousItemStack)){
-            Utils.log("itemstack: " + itemStack.toString());
-            previousItemStack = itemStack;
+        if (itemStack == null || itemStack == ItemStack.EMPTY)
+        {
+            return;
         }
-        if (itemStack == null || itemStack == ItemStack.EMPTY) return;
         Direction direction = tileEntity.getBlockState().get(BlockAutoCrafter.FACING);
         float scale = 0.6f;
 
         matrixStack.push();
         // move to center
         matrixStack.translate(0.5, 0.5, 0.5);
-        float f = -direction.getHorizontalAngle();
         // rotate to face
+        float f = -direction.getHorizontalAngle();
         matrixStack.rotate(Vector3f.YP.rotationDegrees(f));
+        // move to front
         matrixStack.translate(0, 0.05, 0.5);
         // Push it out of the block face a bit to avoid z-fighting
         matrixStack.translate(0, 0, 0.01f);
@@ -43,7 +43,6 @@ public class RendererAutoCrafter extends TileEntityRenderer<TileAutoCrafter> {
         // This cannot replace a proper projection, but it's cheap and gives the desired
         // effect at least from head-on
         matrixStack.scale(scale, scale, 0.0002f);
-
 
         Minecraft.getInstance().getItemRenderer().renderItem(
             itemStack,

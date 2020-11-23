@@ -1,7 +1,7 @@
 package com.theincgi.autocrafter.blocks;
 
 import com.theincgi.autocrafter.PacketHandler;
-import com.theincgi.autocrafter.packets.PacketClientRequestAll;
+import com.theincgi.autocrafter.packets.PacketForServerRequestingTileAutoCrafterUpdatePacket;
 import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -31,91 +31,110 @@ public class BlockAutoCrafter extends ContainerBlock {
 
     public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING; // BlockStateProperties.HORIZONTAL_FACING;
 
-    public BlockAutoCrafter() {
+    public BlockAutoCrafter()
+    {
         super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f, 10));
         this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH));
     }
 
-    public BlockState rotate(BlockState state, Rotation rot) {
+    public BlockState rotate(BlockState state, Rotation rot)
+    {
         return state.with(FACING, rot.rotate(state.get(FACING)));
     }
 
-    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+    public BlockState mirror(BlockState state, Mirror mirrorIn)
+    {
         return state.rotate(mirrorIn.toRotation(state.get(FACING)));
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
+    {
         builder.add(FACING);
     }
 
     @Nullable
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockItemUseContext context)
+    {
         return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
     }
-/*
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        BlockState blockstate = this.getDefaultState();
-        World world = context.getWorld();
-        BlockPos blockpos = context.getPos();
-        Direction [] nearestLookingDirections = context.getNearestLookingDirections();
 
-        for (Direction direction : nearestLookingDirections) {
-            if (direction.getAxis().isHorizontal()) {
-                blockstate = blockstate.with(FACING, direction);
-                if (blockstate.isValidPosition(world, blockpos)) {
-                    return blockstate;
+    /*
+        @Nullable
+        @Override
+        public BlockState getStateForPlacement(BlockItemUseContext context) {
+            BlockState blockstate = this.getDefaultState();
+            World world = context.getWorld();
+            BlockPos blockpos = context.getPos();
+            Direction [] nearestLookingDirections = context.getNearestLookingDirections();
+
+            for (Direction direction : nearestLookingDirections) {
+                if (direction.getAxis().isHorizontal()) {
+                    blockstate = blockstate.with(FACING, direction);
+                    if (blockstate.isValidPosition(world, blockpos)) {
+                        return blockstate;
+                    }
                 }
             }
-        }
 
-        return null;
-    }
-*/
+            return null;
+        }
+    */
     @Override
-    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos)
+    {
         return VoxelShapes.empty();
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
+    {
         super.onBlockPlacedBy(world, pos, state, placer, stack);
 //        TileAutoCrafter tac = (TileAutoCrafter) world.getTileEntity(pos);
     }
 
     @Override
-    public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player)
+    {
         super.onBlockHarvested(world, pos, state, player);
         TileAutoCrafter tac = (TileAutoCrafter) world.getTileEntity(pos);
-        if (!world.isRemote) {
+        if (!world.isRemote)
+        {
             InventoryHelper.dropInventoryItems(world, pos, tac);
             System.out.println("Dropped item");
         }
     }
 
     @Override
-    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, Direction side)
+    {
         return true;
     }
 
     @Nonnull
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state)
+    {
         return BlockRenderType.MODEL;
 //        return BlockRenderType.INVISIBLE;
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (world.isRemote) {
-            PacketHandler.getChannel().sendToServer(PacketClientRequestAll.requestAll(pos));
-        } else {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    {
+        if (world.isRemote)
+        {
+            PacketHandler.getChannel().sendToServer(PacketForServerRequestingTileAutoCrafterUpdatePacket.requestAll(pos));
+        }
+        else
+        {
             //  player.openGui(Core.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
             TileEntity tileEntity = world.getTileEntity(pos);
-            if (tileEntity instanceof INamedContainerProvider) {
+            if (tileEntity instanceof INamedContainerProvider)
+            {
                 NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, tileEntity.getPos());
-            } else {
+            }
+            else
+            {
                 throw new IllegalStateException("A named container provider is missing!");
             }
         }
@@ -124,13 +143,15 @@ public class BlockAutoCrafter extends ContainerBlock {
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
+    public boolean hasTileEntity(BlockState state)
+    {
         return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader world) {
+    public TileEntity createNewTileEntity(IBlockReader world)
+    {
         return new TileAutoCrafter();
     }
 }

@@ -18,12 +18,14 @@ import net.minecraft.util.ResourceLocation;
 @JeiPlugin
 public class AutoCrafterJEIPlugin implements IModPlugin {
     @Override
-    public ResourceLocation getPluginUid() {
+    public ResourceLocation getPluginUid()
+    {
         return new ResourceLocation(AutoCrafter.MODID, AutoCrafter.MODID);
     }
 
     @Override
-    public void registerRecipes(IRecipeRegistration registration) {
+    public void registerRecipes(IRecipeRegistration registration)
+    {
         IModPlugin.super.registerRecipes(registration);
 //        registration.addIngredientInfo(new ItemStack(AutoCrafter.CRAFTER_ITEM.get()), VanillaTypes.ITEM,
         registration.addIngredientInfo(new ItemStack(AutoCrafter.ITEM_AUTOCRAFTER.get()), VanillaTypes.ITEM,
@@ -34,18 +36,21 @@ public class AutoCrafterJEIPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration)
+    {
         registration.addRecipeCatalyst(new ItemStack(AutoCrafter.ITEM_AUTOCRAFTER.get()), VanillaRecipeCategoryUid.CRAFTING);
     }
 
     @Override
-    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration)
+    {
         IModPlugin.super.registerRecipeTransferHandlers(registration);
         registration.addRecipeTransferHandler(ContainerAutoCrafter.class, VanillaRecipeCategoryUid.CRAFTING, 36, 9, 0, 36);
     }
 
     @Override
-    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+    public void registerGuiHandlers(IGuiHandlerRegistration registration)
+    {
         registration.addRecipeClickArea(GuiAutoCrafter.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
     }
 }

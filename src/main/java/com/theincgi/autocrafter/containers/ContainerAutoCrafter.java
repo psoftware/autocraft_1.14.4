@@ -21,23 +21,28 @@ public class ContainerAutoCrafter extends Container {
     public Slot targetSlot;
 
     // Client side
-    public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, PacketBuffer extraData) {
+    public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, PacketBuffer extraData)
+    {
         this(windowId, playerInv, (TileAutoCrafter) Minecraft.getInstance().world.getTileEntity(extraData.readBlockPos()));
     }
 
     // Server side
-    public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, TileAutoCrafter te) {
+    public ContainerAutoCrafter(int windowId, PlayerInventory playerInv, TileAutoCrafter te)
+    {
         super(AutoCrafter.CONTAINER_AUTOCRAFTER.get(), windowId);
         this.tileAutoCrafter = te;
         int slot = 0;
 
         int y;
         int x;
-        for (y = 0; y < 3; ++y) {
-            for (x = 0; x < 3; ++x) {
+        for (y = 0; y < 3; ++y)
+        {
+            for (x = 0; x < 3; ++x)
+            {
                 final int theSlot = slot;
                 this.addSlot(new Slot(this.tileAutoCrafter, slot++, 30 + x * 18, 17 + y * 18) {
-                    public boolean isItemValid(ItemStack stack) {
+                    public boolean isItemValid(ItemStack stack)
+                    {
                         return ContainerAutoCrafter.this.tileAutoCrafter.isSlotAllowed(theSlot, stack);
                     }
                 });
@@ -46,41 +51,49 @@ public class ContainerAutoCrafter extends Container {
 
         this.addSlot(new Slot(this.tileAutoCrafter, slot++, 124, 49) {
             @Override
-            public boolean isItemValid(ItemStack stack) {
+            public boolean isItemValid(ItemStack stack)
+            {
                 return false;
             }
         });
 
         this.addSlot(this.targetSlot = new Slot(this.tileAutoCrafter, slot++, 124, 18) {
-            public int getItemStackLimit(ItemStack stack) {
+            public int getItemStackLimit(ItemStack stack)
+            {
                 return 0;
             }
 
             @Override
-            public void onSlotChanged() {
+            public void onSlotChanged()
+            {
                 super.onSlotChanged();
             }
 
             @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
+            public boolean canTakeStack(PlayerEntity playerIn)
+            {
                 return true;
             }
 
             @Override
-            public boolean isItemValid(ItemStack stack) {
+            public boolean isItemValid(ItemStack stack)
+            {
                 return false;
             }
         });
         slot = 0;
 
-        for (y = 0; y < 9; ++y) {
+        for (y = 0; y < 9; ++y)
+        {
             this.addSlot(new Slot(playerInv, slot++, 8 + y * 18, 142));
         }
 
         slot = 9;
 
-        for (y = 0; y < 3; ++y) {
-            for (x = 0; x < 9; ++x) {
+        for (y = 0; y < 3; ++y)
+        {
+            for (x = 0; x < 9; ++x)
+            {
                 this.addSlot(new Slot(playerInv, slot++, 8 + x * 18, 84 + y * 18));
             }
         }
@@ -88,43 +101,55 @@ public class ContainerAutoCrafter extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity player, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity player, int index)
+    {
         ItemStack previous = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
         ContainerAutoCrafter.Slots category = ContainerAutoCrafter.Slots.getCategory(index);
-        if (slot != null && slot.getHasStack()) {
+        if (slot != null && slot.getHasStack())
+        {
             ItemStack current = slot.getStack();
             previous = current.copy();
-            if (category != null) {
-                switch (category) {
+            if (category != null)
+            {
+                switch (category)
+                {
                     case CRAFTING:
                     case OUTPUT:
                         //case TARGET: target doesnt hold anything anymore
-                        if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.PLAYERINV.getStart(), ContainerAutoCrafter.Slots.PLAYERINV.getEnd() + 1, false)) {
+                        if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.PLAYERINV.getStart(), ContainerAutoCrafter.Slots.PLAYERINV.getEnd() + 1, false))
+                        {
                             return ItemStack.EMPTY;
                         }
 
-                        if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.HOTBAR.getStart(), ContainerAutoCrafter.Slots.HOTBAR.getEnd() + 1, false)) {
+                        if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.HOTBAR.getStart(), ContainerAutoCrafter.Slots.HOTBAR.getEnd() + 1, false))
+                        {
                             return ItemStack.EMPTY;
                         }
                         break;
                     case HOTBAR:
                     case PLAYERINV:
-                        if (this.tileAutoCrafter.getCrafts().isEmpty()) {
-                            if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.TARGET.getStart(), ContainerAutoCrafter.Slots.TARGET.getEnd() + 1, false)) {
+                        if (this.tileAutoCrafter.getCrafts().isEmpty())
+                        {
+                            if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.TARGET.getStart(), ContainerAutoCrafter.Slots.TARGET.getEnd() + 1, false))
+                            {
                                 return ItemStack.EMPTY;
                             }
-                        } else if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.CRAFTING.getStart(), ContainerAutoCrafter.Slots.CRAFTING.getEnd() + 1, false)) {
+                        }
+                        else if (!this.mergeItemStack(current, ContainerAutoCrafter.Slots.CRAFTING.getStart(), ContainerAutoCrafter.Slots.CRAFTING.getEnd() + 1, false))
+                        {
                             return ItemStack.EMPTY;
                         }
                 }
             }
 
-            if (current.getCount() <= 0) {
+            if (current.getCount() <= 0)
+            {
                 slot.putStack(ItemStack.EMPTY);
             }
 
-            if (current.getCount() == previous.getCount()) {
+            if (current.getCount() == previous.getCount())
+            {
                 return ItemStack.EMPTY;
             }
 
@@ -172,7 +197,8 @@ public class ContainerAutoCrafter extends Container {
     */
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean canInteractWith(PlayerEntity player)
+    {
         return true;
     }
 
@@ -186,26 +212,33 @@ public class ContainerAutoCrafter extends Container {
         int x;
         int y;
 
-        Slots(int x) {
+        Slots(int x)
+        {
             this(x, x);
         }
 
-        Slots(int x, int y) {
+        Slots(int x, int y)
+        {
             this.x = x;
             this.y = y;
         }
 
-        public int getStart() {
+        public int getStart()
+        {
             return this.x;
         }
 
-        public int getEnd() {
+        public int getEnd()
+        {
             return this.y;
         }
 
-        public static ContainerAutoCrafter.Slots getCategory(int index) {
-            for (Slots s : values()) {
-                if (s.getStart() <= index && index <= s.getEnd()) {
+        public static ContainerAutoCrafter.Slots getCategory(int index)
+        {
+            for (Slots s : values())
+            {
+                if (s.getStart() <= index && index <= s.getEnd())
+                {
                     return s;
                 }
             }
@@ -215,7 +248,8 @@ public class ContainerAutoCrafter extends Container {
     }
 
 
-    public TileAutoCrafter getTileAutoCrafter() {
+    public TileAutoCrafter getTileAutoCrafter()
+    {
         return tileAutoCrafter;
     }
 }

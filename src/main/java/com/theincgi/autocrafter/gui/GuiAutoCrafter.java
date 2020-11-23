@@ -9,7 +9,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.theincgi.autocrafter.PacketHandler;
 import com.theincgi.autocrafter.containers.ContainerAutoCrafter;
-import com.theincgi.autocrafter.packets.PacketClientCrafterAction;
+import com.theincgi.autocrafter.packets.PacketForServerRequestingTileAutoCrafterUpdateRecipePacket;
 import com.theincgi.autocrafter.tiles.TileAutoCrafter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -32,7 +32,8 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     private TileAutoCrafter tileAutoCrafter;
     private ContainerAutoCrafter container;
 
-    public GuiAutoCrafter(ContainerAutoCrafter te, PlayerInventory playerInv, ITextComponent name) {
+    public GuiAutoCrafter(ContainerAutoCrafter te, PlayerInventory playerInv, ITextComponent name)
+    {
         super(te, playerInv, name);
         this.prev = new GuiAutoCrafter.Button(108, 17, 11, 18, 0.6901961F, 0.0F, 0.7294118F, 0.07058824F, this.background);
         this.next = new GuiAutoCrafter.Button(145, 17, 11, 18, 0.7294118F, 0.0F, 0.7764706F, 0.07058824F, this.background);
@@ -43,11 +44,22 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean isPauseScreen()
+    {
         return false;
     }
 
-    public void drawImage(ResourceLocation texture, int x, int y, int wid, int hei, float uMin, float vMin, float uMax, float vMax) {
+    @Override
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        if (this.minecraft.player.inventory.getItemStack().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.getHasStack()) {
+            this.renderTooltip(matrixStack, this.hoveredSlot.getStack(), mouseX, mouseY);
+        }
+    }
+
+    public void drawImage(ResourceLocation texture, int x, int y, int wid, int hei, float uMin, float vMin, float uMax, float vMax)
+    {
         Minecraft.getInstance().getTextureManager().bindTexture(texture);
         GlStateManager.enableAlphaTest();
         BufferBuilder buffer = Tessellator.getInstance().getBuffer();
@@ -59,7 +71,8 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         Tessellator.getInstance().draw();
     }
 
-    private void drawRectangle(double x1, double y1, double x2, double y2, int color) {
+    private void drawRectangle(double x1, double y1, double x2, double y2, int color)
+    {
         int colorB = (color & 0xFF);
         color = color >> 8;
         int colorG = (color & 0xFF);
@@ -77,16 +90,21 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    {
         int x = this.width / 2 - 88;
         int y = this.height / 2 - 83;
         Minecraft.getInstance().getTextureManager().bindTexture(this.background);
+        int j = (this.width - this.xSize) / 2;
+        int k = (this.height - this.ySize) / 2;
+        this.blit(matrixStack, j, k, 0, 0, this.xSize, this.ySize);
         this.drawImage(this.background, x, y, 176, 166, 0.0F, 0.0F, 0.6875F, 0.6484375F);
         this.prev.draw(mouseX, mouseY, x, y);
         this.next.draw(mouseX, mouseY, x, y);
 
         Slot slot;
-        for (int i = 0; i < this.tileAutoCrafter.getRecipe().items.size(); ++i) {
+        for (int i = 0; i < this.tileAutoCrafter.getRecipe().items.size(); ++i)
+        {
             slot = this.container.getSlot(i);
             ItemStack req = this.tileAutoCrafter.getRecipe().getDisplayItem(i);
 
@@ -114,7 +132,9 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY)
+    {
+        super.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
         String s = this.tileAutoCrafter.getDisplayName().getUnformattedComponentText();
         // super.drawString(Minecraft.getInstance().fontRenderer.d,s, 88,6, 0x404040);
 
@@ -123,20 +143,27 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
+    {
         double x = (double) this.width / 2 - 88;
         double y = (double) this.height / 2 - 83;
 
-        if (this.prev.isInBounds(mouseX - x, mouseY - y)) {
-            PacketClientCrafterAction packet = PacketClientCrafterAction.nextRecipe(this.tileAutoCrafter.getPos());
+        if (this.prev.isInBounds(mouseX - x, mouseY - y))
+        {
+            PacketForServerRequestingTileAutoCrafterUpdateRecipePacket packet = PacketForServerRequestingTileAutoCrafterUpdateRecipePacket.nextRecipe(this.tileAutoCrafter.getPos());
             PacketHandler.getChannel().sendToServer(packet);
-        } else if (this.next.isInBounds(mouseX - x, mouseY - y)) {
-            PacketClientCrafterAction packet = PacketClientCrafterAction.prevRecipe(this.tileAutoCrafter.getPos());
+        }
+        else if (this.next.isInBounds(mouseX - x, mouseY - y))
+        {
+            PacketForServerRequestingTileAutoCrafterUpdateRecipePacket packet = PacketForServerRequestingTileAutoCrafterUpdateRecipePacket.prevRecipe(this.tileAutoCrafter.getPos());
             PacketHandler.getChannel().sendToServer(packet);
-        } else if (this.container.targetSlot.equals(this.getSlotUnderMouse())) {
+        }
+        else if (this.container.targetSlot.equals(this.getSlotUnderMouse()))
+        {
             // TODO: Only client side. While the others don't do the same ??
-            if (FMLEnvironment.dist.isClient()) {
-                PacketHandler.getChannel().sendToServer(PacketClientCrafterAction.targetChanged(
+            if (FMLEnvironment.dist.isClient())
+            {
+                PacketHandler.getChannel().sendToServer(PacketForServerRequestingTileAutoCrafterUpdateRecipePacket.targetChanged(
                     this.tileAutoCrafter.getPos(), Minecraft.getInstance().player.inventory.getItemStack())
                 );
             }
@@ -156,7 +183,8 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
         float vmax;
         ResourceLocation tex;
 
-        public Button(int x, int y, int wid, int hei, float umin, float vmin, float umax, float vmax, ResourceLocation tex) {
+        public Button(int x, int y, int wid, int hei, float umin, float vmin, float umax, float vmax, ResourceLocation tex)
+        {
             this.x = x;
             this.y = y;
             this.wid = wid;
@@ -168,12 +196,14 @@ public class GuiAutoCrafter extends ContainerScreen<ContainerAutoCrafter> {
             this.tex = tex;
         }
 
-        public void draw(int mouseX, int mouseY, int dx, int dy) {
+        public void draw(int mouseX, int mouseY, int dx, int dy)
+        {
             float yOffset = this.isInBounds(mouseX - dx, mouseY - dy) ? (float) this.hei / 255.0F : 0.0F;
             GuiAutoCrafter.this.drawImage(this.tex, this.x + dx, this.y + dy, this.wid, this.hei, this.umin, this.vmin + yOffset, this.umax, this.vmax + yOffset);
         }
 
-        public boolean isInBounds(double clickX, double clickY) {
+        public boolean isInBounds(double clickX, double clickY)
+        {
             return clickX > this.x && clickY > this.y && clickX < this.x + this.wid && clickY < this.y + this.hei;
         }
     }

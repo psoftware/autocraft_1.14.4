@@ -49,7 +49,8 @@ public class AutoCrafter {
         () -> IForgeContainerType.create(ContainerAutoCrafter::new)
     );
 
-    public AutoCrafter() {
+    public AutoCrafter()
+    {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);

@@ -14,16 +14,19 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(modid = AutoCrafter.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetup {
 
-    public static void init(final FMLClientSetupEvent event) {
+    public static void init(final FMLClientSetupEvent event)
+    {
         ScreenManager.registerFactory(AutoCrafter.CONTAINER_AUTOCRAFTER.get(), GuiAutoCrafter::new);
 //        RenderTypeLookup.setRenderLayer(AutoCrafter.BLOCK_AUTOCRAFTER.get(), (RenderType) -> true);
         ClientRegistry.bindTileEntityRenderer(AutoCrafter.TILE_AUTOCRAFTER.get(), RendererAutoCrafter::new);
     }
 
     @SubscribeEvent
-    public void onTooltipPre(RenderTooltipEvent.Pre event) {
+    public void onTooltipPre(RenderTooltipEvent.Pre event)
+    {
         Item item = event.getStack().getItem();
-        if (item.getRegistryName().getNamespace().equals(AutoCrafter.MODID)) {
+        if (item.getRegistryName().getNamespace().equals(AutoCrafter.MODID))
+        {
             event.setMaxWidth(200);
         }
     }
