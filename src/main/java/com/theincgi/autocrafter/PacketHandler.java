@@ -1,9 +1,9 @@
 package com.theincgi.autocrafter;
 
-import com.theincgi.autocrafter.packets.PacketClientCrafterAction;
-import com.theincgi.autocrafter.packets.PacketClientRequestAll;
-import com.theincgi.autocrafter.packets.PacketServerCrafterAction;
-import com.theincgi.autocrafter.packets.PacketServerRequestAll;
+import com.theincgi.autocrafter.packets.PacketForServerRequestingTileAutoCrafterUpdateRecipePacket;
+import com.theincgi.autocrafter.packets.PacketForServerRequestingTileAutoCrafterUpdatePacket;
+import com.theincgi.autocrafter.packets.PacketForClientToUpdateTileAutoCrafterRecipe;
+import com.theincgi.autocrafter.packets.PacketForClientToUpdateTileAutoCrafter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -11,22 +11,23 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = Integer.toString(1);
     private static final SimpleChannel HANDLER = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(Core.MODID, "main_channel"))
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
-            .simpleChannel();
+        .named(new ResourceLocation(AutoCrafter.MODID, "main_channel"))
+        .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+        .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+        .networkProtocolVersion(() -> PROTOCOL_VERSION)
+        .simpleChannel();
 
     public static void register()
     {
         int disc = 0;
-        HANDLER.registerMessage(disc++, PacketClientRequestAll.class, PacketClientRequestAll::encode, PacketClientRequestAll::decode, PacketClientRequestAll.Handler::onMessage);
-        HANDLER.registerMessage(disc++, PacketServerRequestAll.class, PacketServerRequestAll::encode, PacketServerRequestAll::decode, PacketServerRequestAll.Handler::onMessage);
-        HANDLER.registerMessage(disc++, PacketClientCrafterAction.class, PacketClientCrafterAction::encode, PacketClientCrafterAction::decode, PacketClientCrafterAction.Handler::onMessage);
-        HANDLER.registerMessage(disc++, PacketServerCrafterAction.class, PacketServerCrafterAction::encode, PacketServerCrafterAction::decode, PacketServerCrafterAction.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketForServerRequestingTileAutoCrafterUpdatePacket.class, PacketForServerRequestingTileAutoCrafterUpdatePacket::encode, PacketForServerRequestingTileAutoCrafterUpdatePacket::decode, PacketForServerRequestingTileAutoCrafterUpdatePacket.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketForClientToUpdateTileAutoCrafter.class, PacketForClientToUpdateTileAutoCrafter::encode, PacketForClientToUpdateTileAutoCrafter::decode, PacketForClientToUpdateTileAutoCrafter.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketForServerRequestingTileAutoCrafterUpdateRecipePacket.class, PacketForServerRequestingTileAutoCrafterUpdateRecipePacket::encode, PacketForServerRequestingTileAutoCrafterUpdateRecipePacket::decode, PacketForServerRequestingTileAutoCrafterUpdateRecipePacket.Handler::onMessage);
+        HANDLER.registerMessage(disc++, PacketForClientToUpdateTileAutoCrafterRecipe.class, PacketForClientToUpdateTileAutoCrafterRecipe::encode, PacketForClientToUpdateTileAutoCrafterRecipe::decode, PacketForClientToUpdateTileAutoCrafterRecipe.Handler::onMessage);
     }
 
-    public static SimpleChannel getChannel() {
+    public static SimpleChannel getChannel()
+    {
         return HANDLER;
     }
 

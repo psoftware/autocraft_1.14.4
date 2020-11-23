@@ -1,29 +1,29 @@
 package com.theincgi.autocrafter.packets;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class TilePacket {
-   BlockPos p;
+    BlockPos p;
 
-   public TilePacket() {}
+    public TilePacket()
+    {
+    }
 
-   public TilePacket(BlockPos p) {
-      this.p = p;
-   }
+    public TilePacket(BlockPos p)
+    {
+        this.p = p;
+    }
 
-   // p -> buff
-   public void subEncode(PacketBuffer buf)
-   {
-      buf.writeInt(this.p.getX());
-      buf.writeInt(this.p.getY());
-      buf.writeInt(this.p.getZ());
-   }
+    // p -> buff
+    public void subEncode(PacketBuffer buf)
+    {
+        buf.writeBlockPos(this.p);
+    }
 
-   // buff -> p
-   public void subDecode(PacketBuffer buf)
-   {
-      this.p = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-   }
+    // buff -> p
+    public void subDecode(PacketBuffer buf)
+    {
+        this.p = buf.readBlockPos();
+    }
 }

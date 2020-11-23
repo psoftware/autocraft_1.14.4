@@ -1,0 +1,14 @@
+{
+  "container.autocrafter": "Auto Crafter",
+  "block.autocrafter.autocrafter": "Auto Crafter",
+  "block.autocrafter.autocrafter.name": "Auto Crafter",
+  "block.autocrafter.autocrafter.tooltip": "Automatic crafting table!",
+
+  "tile.autocrafter.autocrafter": "Auto Crafter",
+  "tile.autocrafter.autocrafter.name": "Auto Crafter",
+  "tile.autocrafter.autocrafter.tooltip": "Automatic crafting table!",
+  "tile.autocrafter.autocrafter.jei.1": "Automatic crafting table!",
+  "tile.autocrafter.autocrafter.jei.2": "Doesn't use power!",
+  "tile.autocrafter.autocrafter.jei.3": "Doesn't have speed limits!",
+  "tile.autocrafter.autocrafter.jei.4": "Easy setup!"
+}

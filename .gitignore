@@ -5,4 +5,4 @@
 /run/
 
 # Minecraft configurations must be regenerated for every new workspace
-/.idea/runConfigurations
+/.idea/

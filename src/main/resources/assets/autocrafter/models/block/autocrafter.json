@@ -1,6 +1,23 @@
+
 {
-    "parent": "block/cube_all",
+    "backup": {
+        "parent": "block/cube",
+        "textures": {
+            "original.all": "autocrafter:block/autocrafter",
+            "particle": "autocrafter:block/autocrafter_top",
+            "down": "autocrafter:block/autocrafter_bottom",
+            "up": "autocrafter:block/autocrafter_top",
+            "north": "autocrafter:block/autocrafter_front",
+            "east": "autocrafter:block/autocrafter_side",
+            "south": "autocrafter:block/autocrafter_side",
+            "west": "autocrafter:block/autocrafter_side"
+        }
+    },
+    "parent": "minecraft:block/orientable_with_bottom",
     "textures": {
-        "all": "autocrafter:block/autocrafter"
+        "top": "autocrafter:block/autocrafter_top",
+        "front": "autocrafter:block/autocrafter_front",
+        "side": "autocrafter:block/autocrafter_side",
+        "bottom": "autocrafter:block/autocrafter_bottom"
     }
 }
